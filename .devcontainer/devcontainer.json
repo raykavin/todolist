@@ -1,5 +1,5 @@
 {
-    "name": "E-Commerce DevContainer (Golang)",
+    "name": "TODO List DevContainer (Golang)",
     "workspaceFolder": "/workspaces/app",
     "build": {
         "dockerfile": "Dockerfile",

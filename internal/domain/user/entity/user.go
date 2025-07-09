@@ -3,6 +3,7 @@ package entity
 import (
 	"errors"
 	"todolist/internal/domain/shared"
+	"todolist/internal/domain/user/valueobject"
 )
 
 var (
@@ -27,7 +28,6 @@ func NewUser(
 	personID string,
 	username string,
 	password valueobject.Password,
-	role valueobject.UserRole,
 ) (*User, error) {
 	if personID == "" {
 		return nil, ErrInvalidPersonID
@@ -43,37 +43,32 @@ func NewUser(
 		username: username,
 		password: password,
 		status:   valueobject.StatusActive,
-		role:     role,
+		role:     valueobject.RoleUser,
 	}, nil
 }
 
 // Getters
-func (u *User) PersonID() string {
-	return u.personID
-}
 
-func (u *User) Username() string {
-	return u.username
-}
+// PersonID returns the ID of the person associated with the user
+func (u User) PersonID() string { return u.personID }
 
-func (u *User) Password() valueobject.Password {
-	return u.password
-}
+// Username returns the username of the user
+func (u User) Username() string { return u.username }
 
-func (u *User) Status() valueobject.UserStatus {
-	return u.status
-}
+// Password returns the password of the user
+func (u User) Password() valueobject.Password { return u.password }
 
-func (u *User) Role() valueobject.UserRole {
-	return u.role
-}
+// Status returns the current status of the user
+func (u User) Status() valueobject.UserStatus { return u.status }
+
+// Role returns the role of the user
+func (u User) Role() valueobject.UserRole { return u.role }
+
+// IsActive checks if the user is active
+func (u User) IsActive() bool { return u.status == valueobject.StatusActive }
 
 // Business methods
-func (u *User) IsActive() bool {
-	return u.status == valueobject.StatusActive
-}
-
-func (u *User) CanPerformAction() error {
+func (u User) CanPerformAction() error {
 	if !u.IsActive() {
 		return ErrUserNotActive
 	}
@@ -81,27 +76,33 @@ func (u *User) CanPerformAction() error {
 }
 
 // Update methods
+
+// ChangeUsername changes the username of the user
 func (u *User) ChangePassword(newPassword valueobject.Password) {
 	u.password = newPassword
-	u.SetUpdatedAt()
+	u.SetAsModified()
 }
 
+// ChangeUsername changes the username of the user
 func (u *User) ChangeRole(newRole valueobject.UserRole) {
 	u.role = newRole
-	u.SetUpdatedAt()
+	u.SetAsModified()
 }
 
+// ChangeUsername changes the username of the user
 func (u *User) Activate() {
 	u.status = valueobject.StatusActive
-	u.SetUpdatedAt()
+	u.SetAsModified()
 }
 
+// Deactivate sets the user status to inactive
 func (u *User) Deactivate() {
 	u.status = valueobject.StatusInactive
-	u.SetUpdatedAt()
+	u.SetAsModified()
 }
 
+// Block sets the user status to blocked
 func (u *User) Block() {
 	u.status = valueobject.StatusBlocked
-	u.SetUpdatedAt()
+	u.SetAsModified()
 }

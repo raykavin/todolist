@@ -15,11 +15,12 @@ var (
 // User represents a system user
 type User struct {
 	shared.Entity
-	personID int64
-	username string
-	password vo.Password
-	status   vo.UserStatus
-	role     vo.UserRole
+	personID      int64
+	username      string
+	loginAttempts int
+	password      vo.Password
+	status        vo.UserStatus
+	role          vo.UserRole
 }
 
 // NewUser creates a new User entity
@@ -75,6 +76,10 @@ func (u User) CanPerformAction() error {
 	return nil
 }
 
+func (u User) FailedLoginAttempts() bool {
+	return u.loginAttempts > 3
+}
+
 // Update methods
 
 // ChangeUsername changes the username of the user
@@ -104,5 +109,10 @@ func (u *User) Deactivate() {
 // Block sets the user status to blocked
 func (u *User) Block() {
 	u.status = vo.StatusBlocked
+	u.SetAsModified()
+}
+
+func (u *User) IncrementLoginAttempts() {
+	u.loginAttempts++
 	u.SetAsModified()
 }

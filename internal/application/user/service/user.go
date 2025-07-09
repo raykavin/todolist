@@ -8,7 +8,7 @@ import (
 	"todolist/internal/domain/shared"
 	"todolist/internal/domain/user/entity"
 	"todolist/internal/domain/user/repository"
-	vo "todolist/internal/domain/user/valueobject"
+	uservo "todolist/internal/domain/user/valueobject"
 )
 
 // UserService provides domain services for User operations
@@ -91,15 +91,15 @@ func (s *userService) DeactivateInactiveUsers(ctx context.Context, inactiveDays 
 func (s *userService) BlockSuspiciousUsers(ctx context.Context, criteria SuspiciousCriteria) ([]int64, error) {
 	blockedUserIDs := []int64{}
 
-	// Get all active users (simplified)
-	users, err := s.userQueryRepo.FindByStatus(ctx, vo.StatusActive, shared.QueryOptions{Limit: 1000})
+	// Get all active users
+	users, err := s.userQueryRepo.FindByStatus(ctx, uservo.StatusActive, shared.QueryOptions{Limit: 1000})
 	if err != nil {
 		return nil, err
 	}
 
 	for _, user := range users {
-		// In real implementation, check failed login attempts from logs
-		// For now, just demonstrate the pattern
+		if user.FailedLoginAttempts() {
+		}
 		user.Block()
 		if err := s.userRepo.Save(ctx, user); err != nil {
 			continue
@@ -112,9 +112,9 @@ func (s *userService) BlockSuspiciousUsers(ctx context.Context, criteria Suspici
 
 // EnforcePasswordPolicy validates password against policy rules
 func (s *userService) EnforcePasswordPolicy(password string) error {
-	// Check minimum length
+	// Check minimum length (already done in value object)
 	if len(password) < 8 {
-		return vo.ErrPasswordTooShort
+		return uservo.ErrPasswordTooShort
 	}
 
 	// Check for at least one uppercase letter
@@ -137,7 +137,7 @@ func (s *userService) EnforcePasswordPolicy(password string) error {
 	}
 
 	if !hasUpper || !hasLower || !hasDigit || !hasSpecial {
-		return vo.ErrPasswordTooWeak
+		return uservo.ErrPasswordTooWeak
 	}
 
 	return nil

@@ -2,7 +2,8 @@ package repository
 
 import (
 	"context"
-	"ecommerce/internal/domain/shared"
+	"todolist/internal/domain/person/entity"
+	"todolist/internal/domain/shared"
 )
 
 // PersonRepository defines persistence operations for Person

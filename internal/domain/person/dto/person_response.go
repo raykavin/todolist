@@ -2,7 +2,7 @@ package dto
 
 // PersonResponse represents a person in API responses
 type PersonResponse struct {
-	ID        string `json:"id"`
+	ID        int64  `json:"id"`
 	Name      string `json:"name"`
 	Email     string `json:"email"`
 	TaxID     string `json:"tax_id"`

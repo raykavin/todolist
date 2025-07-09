@@ -29,15 +29,18 @@ func NewPerson(
 	phone string,
 	taxID vo.TaxID,
 	email vo.Email,
-	birthDate sharedvo.Date,
+	birthDate *sharedvo.Date,
 ) (*Person, error) {
 	p := &Person{
-		Entity:    shared.NewEntity(id),
-		name:      name,
-		taxID:     taxID,
-		email:     email,
-		phone:     phone,
-		birthDate: birthDate,
+		Entity: shared.NewEntity(id),
+		name:   name,
+		taxID:  taxID,
+		email:  email,
+		phone:  phone,
+	}
+
+	if birthDate != nil {
+		p.birthDate = *birthDate
 	}
 
 	if err := p.validate(); err != nil {

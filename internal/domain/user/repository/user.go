@@ -29,6 +29,7 @@ type UserQueryRepository interface {
 	FindAll(ctx context.Context, options shared.QueryOptions) ([]*entity.User, error)
 	FindByStatus(ctx context.Context, status valueobject.UserStatus, options shared.QueryOptions) ([]*entity.User, error)
 	FindByRole(ctx context.Context, role valueobject.UserRole, options shared.QueryOptions) ([]*entity.User, error)
+	FindInactiveUsers(ctx context.Context, inactiveDays int, options shared.QueryOptions) ([]*entity.User, error)
 
 	// Aggregations
 	Count(ctx context.Context, filters []shared.Filter) (int64, error)

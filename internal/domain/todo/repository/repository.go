@@ -5,7 +5,6 @@ import (
 	"time"
 	"todolist/internal/domain/shared"
 	sharedvo "todolist/internal/domain/shared/valueobject"
-	"todolist/internal/domain/todo/dto"
 	"todolist/internal/domain/todo/entity"
 	vo "todolist/internal/domain/todo/valueobject"
 )
@@ -28,7 +27,7 @@ type TodoRepository interface {
 type TodoQueryRepository interface {
 	// List operations
 	FindAll(ctx context.Context, options shared.QueryOptions) ([]*entity.Todo, error)
-	FindByFilters(ctx context.Context, filters dto.TodoFilter, options shared.QueryOptions) ([]*entity.Todo, error)
+	FindByFilters(ctx context.Context, filters vo.TodoFilterCriteria, options shared.QueryOptions) ([]*entity.Todo, error)
 
 	// User-specific queries
 	FindByUserAndStatus(ctx context.Context, userID int64, status vo.TodoStatus, options shared.QueryOptions) ([]*entity.Todo, error)
@@ -50,8 +49,8 @@ type TodoQueryRepository interface {
 	Count(ctx context.Context, filters []shared.Filter) (int64, error)
 	CountByStatus(ctx context.Context, userID int64) (map[vo.TodoStatus]int64, error)
 	CountByPriority(ctx context.Context, userID int64) (map[sharedvo.Priority]int64, error)
-	GetStatistics(ctx context.Context, userID int64) (*dto.TodoStatistics, error)
+	GetStatistics(ctx context.Context, userID int64) (*vo.TodoStatistics, error)
 
 	// Tag aggregations
-	GetPopularTags(ctx context.Context, userID int64, limit int) ([]dto.TagCount, error)
+	GetPopularTags(ctx context.Context, userID int64, limit int) ([]vo.TagCount, error)
 }

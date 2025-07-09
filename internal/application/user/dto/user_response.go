@@ -2,8 +2,8 @@ package dto
 
 // UserResponse represents a user in API responses
 type UserResponse struct {
-	ID        string      `json:"id"`
-	PersonID  string      `json:"person_id"`
+	ID        int64       `json:"id"`
+	PersonID  int64       `json:"person_id"`
 	Username  string      `json:"username"`
 	Status    string      `json:"status"`
 	Role      string      `json:"role"`
@@ -14,7 +14,7 @@ type UserResponse struct {
 
 // PersonInfo represents basic person information
 type PersonInfo struct {
-	ID    string `json:"id"`
+	ID    int64  `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }

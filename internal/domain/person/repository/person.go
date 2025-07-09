@@ -10,10 +10,10 @@ import (
 type PersonRepository interface {
 	// Commands
 	Save(ctx context.Context, person *entity.Person) error
-	Delete(ctx context.Context, id string) error
+	Delete(ctx context.Context, id int64) error
 
 	// Queries
-	FindByID(ctx context.Context, id string) (*entity.Person, error)
+	FindByID(ctx context.Context, id int64) (*entity.Person, error)
 	FindByEmail(ctx context.Context, email string) (*entity.Person, error)
 
 	// Validations

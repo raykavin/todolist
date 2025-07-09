@@ -13,7 +13,7 @@ var (
 	ErrInvalidTaxIDNumber = errors.New("invalid taxID number")
 	// ErrInvalidTaxIDType is returned when the taxID type cannot be determined
 	ErrInvalidTaxIDType = errors.New("invalid taxID type")
-	// ErrEmptyTaxID is returned when the taxID string is empty
+	// ErrEmptyTaxID is returned when the taxID int64 is empty
 	ErrEmptyTaxID = errors.New("taxID cannot be empty")
 )
 
@@ -43,7 +43,7 @@ type TaxID struct {
 }
 
 // NewTaxID creates a new TaxID value object.
-// It accepts a taxID string in various formats:
+// It accepts a taxID int64 in various formats:
 //   - CPF: "123.456.789-10" or "12345678910"
 //   - CNPJ: "12.345.678/0001-90" or "12345678000190"
 //

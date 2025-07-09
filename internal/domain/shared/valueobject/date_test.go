@@ -43,7 +43,7 @@ func TestNewDate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "invalid string",
+			name:    "invalid int64",
 			input:   "not-a-date",
 			wantErr: true,
 		},

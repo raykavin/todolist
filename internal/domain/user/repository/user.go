@@ -11,16 +11,16 @@ import (
 type UserRepository interface {
 	// Commands
 	Save(ctx context.Context, user *entity.User) error
-	Delete(ctx context.Context, id string) error
+	Delete(ctx context.Context, id int64) error
 
 	// Queries
-	FindByID(ctx context.Context, id string) (*entity.User, error)
+	FindByID(ctx context.Context, id int64) (*entity.User, error)
 	FindByUsername(ctx context.Context, username string) (*entity.User, error)
-	FindByPersonID(ctx context.Context, personID string) (*entity.User, error)
+	FindByPersonID(ctx context.Context, personID int64) (*entity.User, error)
 
 	// Validations
 	ExistsByUsername(ctx context.Context, username string) (bool, error)
-	ExistsByPersonID(ctx context.Context, personID string) (bool, error)
+	ExistsByPersonID(ctx context.Context, personID int64) (bool, error)
 }
 
 // UserQueryRepository defines complex query operations for User

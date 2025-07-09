@@ -2,7 +2,7 @@ package entity
 
 import (
 	"errors"
-	"todolist/internal/domain/person/valueobject"
+	vo "todolist/internal/domain/person/valueobject"
 	"todolist/internal/domain/shared"
 	sharedvo "todolist/internal/domain/shared/valueobject"
 )
@@ -17,18 +17,18 @@ type Person struct {
 	shared.Entity
 	name      string
 	phone     string
-	taxID     valueobject.TaxID
-	email     valueobject.Email
+	taxID     vo.TaxID
+	email     vo.Email
 	birthDate sharedvo.Date
 }
 
 // NewPerson creates a new Person entity
 func NewPerson(
-	id uint64,
+	id int64,
 	name string,
 	phone string,
-	taxID valueobject.TaxID,
-	email valueobject.Email,
+	taxID vo.TaxID,
+	email vo.Email,
 	birthDate sharedvo.Date,
 ) (*Person, error) {
 	p := &Person{
@@ -64,10 +64,10 @@ func (p Person) validate() error {
 // Name returns the name of the person
 func (p Person) Name() string { return p.name }
 
-func (p Person) TaxID() valueobject.TaxID { return p.taxID }
+func (p Person) TaxID() vo.TaxID { return p.taxID }
 
 // Email returns the email of the person
-func (p Person) Email() valueobject.Email { return p.email }
+func (p Person) Email() vo.Email { return p.email }
 
 // Phone returns the phone number of the person
 func (p Person) Phone() string { return p.phone }
@@ -88,7 +88,7 @@ func (p *Person) UpdateName(name string) error {
 }
 
 // UpdateEmail updates the email of the person
-func (p *Person) UpdateEmail(email valueobject.Email) {
+func (p *Person) UpdateEmail(email vo.Email) {
 	p.email = email
 	p.SetAsModified()
 }

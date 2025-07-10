@@ -2,6 +2,7 @@ package entity
 
 import (
 	"errors"
+	"time"
 	"todolist/internal/domain/shared"
 	vo "todolist/internal/domain/user/valueobject"
 )
@@ -15,12 +16,13 @@ var (
 // User represents a system user
 type User struct {
 	shared.Entity
-	personID      int64
-	username      string
-	loginAttempts int
-	password      vo.Password
-	status        vo.UserStatus
-	role          vo.UserRole
+	personID           int64
+	username           string
+	loginAttempts      int
+	lastLoginAttemptAt time.Time
+	password           vo.Password
+	status             vo.UserStatus
+	role               vo.UserRole
 }
 
 // NewUser creates a new User entity
@@ -68,16 +70,20 @@ func (u User) Role() vo.UserRole { return u.role }
 // IsActive checks if the user is active
 func (u User) IsActive() bool { return u.status == vo.StatusActive }
 
+// LastLoginAttemptAt returns the last login attemps of user
+func (u User) LastLoginAttemptAt() time.Time { return u.lastLoginAttemptAt }
+
+// FailedLoginAttempts returns the counter of login attempts
+func (u User) FailedLoginAttempts() int { return u.loginAttempts }
+
 // Business methods
+
+// CanPerformAction check if user is allowed to perform action
 func (u User) CanPerformAction() error {
 	if !u.IsActive() {
 		return ErrUserNotActive
 	}
 	return nil
-}
-
-func (u User) FailedLoginAttempts() bool {
-	return u.loginAttempts > 3
 }
 
 // Update methods
@@ -112,7 +118,9 @@ func (u *User) Block() {
 	u.SetAsModified()
 }
 
+// IncrementLoginAttempts increment login attempts
 func (u *User) IncrementLoginAttempts() {
 	u.loginAttempts++
+	u.lastLoginAttemptAt = time.Now()
 	u.SetAsModified()
 }

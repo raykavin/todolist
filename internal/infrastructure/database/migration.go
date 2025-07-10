@@ -1,5 +1,16 @@
 package database
 
+/*
+ * migration.go
+ *
+ * This file defines database migration logic.
+ *
+ * It should provide tools to apply, rollback, and version control schema changes
+ * to keep the database structure in sync with your domain model.
+ *
+ * This is useful for CI/CD pipelines and collaborative development.
+*/
+
 import (
 	"fmt"
 

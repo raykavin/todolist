@@ -1,5 +1,16 @@
 package database
 
+/*
+ * seeder.go
+ *
+ * This file provides database seeding logic.
+ *
+ * Use it to populate the database with initial or sample data,
+ * which can help in development, testing, or demo environments.
+ *
+ * Examples include inserting default roles, admin accounts, or static lookup tables.
+ */
+
 import (
 	"fmt"
 	"time"

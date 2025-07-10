@@ -1,5 +1,16 @@
 package database
 
+/*
+ * helpers.go
+ *
+ * This file contains helper functions for database operations.
+ *
+ * Examples include transaction wrappers, generic query utilities,
+ * or reusable mappers for converting rows to domain entities.
+ *
+ * Helpers reduce duplication and make repository code more maintainable.
+*/
+
 import (
 	"fmt"
 	"strings"

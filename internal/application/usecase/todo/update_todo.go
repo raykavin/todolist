@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"context"
+	"todolist/internal/application/dto"
 	"todolist/internal/domain/shared"
 	sharedvo "todolist/internal/domain/shared/valueobject"
-	"todolist/internal/domain/todo/dto"
 	"todolist/internal/domain/todo/repository"
 	"todolist/internal/domain/todo/service"
 	vo "todolist/internal/domain/todo/valueobject"

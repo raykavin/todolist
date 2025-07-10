@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 	"time"
+	"todolist/internal/application/dto"
 	sharedvo "todolist/internal/domain/shared/valueobject"
-	"todolist/internal/domain/todo/dto"
 	"todolist/internal/domain/todo/entity"
 	"todolist/internal/domain/todo/repository"
 	"todolist/internal/domain/todo/service"

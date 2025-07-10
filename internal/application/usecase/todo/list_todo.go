@@ -2,14 +2,15 @@ package usecase
 
 import (
 	"context"
+	"todolist/internal/application/dto"
 	"todolist/internal/domain/shared"
-	"todolist/internal/domain/todo/dto"
 	"todolist/internal/domain/todo/repository"
+	vo "todolist/internal/domain/todo/valueobject"
 )
 
 // ListTodosUseCase handles listing todos with filters
 type ListTodosUseCase interface {
-	Execute(ctx context.Context, userID int64, filters dto.TodoFilter, options shared.QueryOptions) (*dto.TodoListResponse, error)
+	Execute(ctx context.Context, userID int64, filters vo.TodoFilterCriteria, options shared.QueryOptions) (*dto.TodoListResponse, error)
 }
 
 type listTodosUseCase struct {
@@ -27,7 +28,7 @@ func NewListTodosUseCase(todoQueryRepo repository.TodoQueryRepository) ListTodos
 func (uc *listTodosUseCase) Execute(
 	ctx context.Context,
 	userID int64,
-	filters dto.TodoFilter,
+	filters vo.TodoFilterCriteria,
 	options shared.QueryOptions,
 ) (*dto.TodoListResponse, error) {
 	// Ensure user filter is set

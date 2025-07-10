@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"time"
+	"todolist/internal/domain/shared"
 	"todolist/internal/domain/todo/repository"
+	vo "todolist/internal/domain/todo/valueobject"
 )
 
 var (
@@ -117,14 +119,94 @@ func (s *todoService) SuggestDueDate(ctx context.Context, priority string, userW
 
 // MarkOverdueAsInProgress marks all overdue todos as in progress
 func (s *todoService) MarkOverdueAsInProgress(ctx context.Context, userID int64) (int, error) {
-	// Implementation would fetch overdue todos and update their status
-	// This is a simplified version
-	return 0, nil
+	// Create filter to find overdue pending todos
+	isOverdue := true
+	filter := vo.TodoFilterCriteria{
+		UserID:    userID,
+		Status:    []string{string(vo.StatusPending)},
+		IsOverdue: &isOverdue,
+	}
+
+	// Find all overdue pending todos
+	overdueTodos, err := s.todoQueryRepo.FindByFilters(ctx, filter, shared.QueryOptions{Limit: 1000})
+	if err != nil {
+		return 0, err
+	}
+
+	updatedCount := 0
+
+	// Update each overdue todo to in_progress status
+	for _, todo := range overdueTodos {
+		// Verify todo is actually overdue and pending
+		if !todo.IsOverdue() || todo.Status() != vo.StatusPending {
+			continue
+		}
+
+		// Change status to in progress
+		if err := todo.StartProgress(); err != nil {
+			// Skip this todo and continue with others
+			continue
+		}
+
+		// Save the updated todo
+		if err := s.todoRepo.Save(ctx, todo); err != nil {
+			// Skip this todo and continue with others
+			continue
+		}
+
+		updatedCount++
+	}
+
+	return updatedCount, nil
 }
 
 // AutoCancelOldPendingTodos cancels old pending todos
 func (s *todoService) AutoCancelOldPendingTodos(ctx context.Context, userID int64, olderThan time.Duration) (int, error) {
-	// Implementation would fetch old pending todos and cancel them
-	// This is a simplified version
-	return 0, nil
+	// Calculate cutoff date
+	cutoffDate := time.Now().Add(-olderThan)
+
+	// Create filter to find pending todos with due date before cutoff
+	filter := vo.TodoFilterCriteria{
+		UserID:    userID,
+		Status:    []string{string(vo.StatusPending)},
+		DueDateTo: &cutoffDate,
+	}
+
+	// Find all old pending todos
+	oldTodos, err := s.todoQueryRepo.FindByFilters(ctx, filter, shared.QueryOptions{Limit: 1000})
+	if err != nil {
+		return 0, err
+	}
+
+	cancelledCount := 0
+
+	// Process each old todo
+	for _, todo := range oldTodos {
+		// Verify todo is pending
+		if todo.Status() != vo.StatusPending {
+			continue
+		}
+
+		// Check if todo is actually old enough
+		dueDate := todo.DueDate()
+		if dueDate == nil || !dueDate.Before(cutoffDate) {
+			continue
+		}
+
+		// Cancel the todo
+		if err := todo.Cancel(); err != nil {
+			// Skip this todo and continue with others
+			continue
+		}
+
+		// Save the updated todo
+		if err := s.todoRepo.Save(ctx, todo); err != nil {
+			// Skip this todo and continue with others
+			continue
+		}
+
+		cancelledCount++
+	}
+
+	return cancelledCount, nil
 }

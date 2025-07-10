@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"todolist/internal/domain/person/dto"
+	"todolist/internal/application/dto"
 	"todolist/internal/domain/person/repository"
 	"todolist/internal/domain/shared"
 )

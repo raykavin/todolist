@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"time"
-	"todolist/internal/application/user/dto"
+	"todolist/internal/application/dto"
 	personEnt "todolist/internal/domain/person/entity"
 	"todolist/internal/domain/person/repository"
 	"todolist/internal/domain/user/entity"

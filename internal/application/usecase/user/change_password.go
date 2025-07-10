@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
-	"todolist/internal/application/user/dto"
+	"todolist/internal/application/dto"
 	"todolist/internal/domain/shared"
 	"todolist/internal/domain/user/repository"
 	vo "todolist/internal/domain/user/valueobject"

@@ -2,13 +2,13 @@ package usecase
 
 import (
 	"context"
-	"todolist/internal/domain/todo/dto"
 	"todolist/internal/domain/todo/repository"
+	vo "todolist/internal/domain/todo/valueobject"
 )
 
 // GetStatisticsUseCase handles retrieving todo statistics
 type GetStatisticsUseCase interface {
-	Execute(ctx context.Context, userID int64) (*dto.TodoStatistics, error)
+	Execute(ctx context.Context, userID int64) (*vo.TodoStatistics, error)
 }
 
 type getStatisticsUseCase struct {
@@ -23,6 +23,6 @@ func NewGetStatisticsUseCase(todoQueryRepo repository.TodoQueryRepository) GetSt
 }
 
 // Execute retrieves todo statistics for a user
-func (uc *getStatisticsUseCase) Execute(ctx context.Context, userID int64) (*dto.TodoStatistics, error) {
+func (uc *getStatisticsUseCase) Execute(ctx context.Context, userID int64) (*vo.TodoStatistics, error) {
 	return uc.todoQueryRepo.GetStatistics(ctx, userID)
 }

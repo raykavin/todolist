@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"todolist/internal/application/user/dto"
-	"todolist/internal/application/user/service"
+	"todolist/internal/application/dto"
+	"todolist/internal/application/service"
 	personRepo "todolist/internal/domain/person/repository"
 	userRepo "todolist/internal/domain/user/repository"
 	vo "todolist/internal/domain/user/valueobject"
@@ -18,7 +18,7 @@ var (
 
 // LoginUseCase handles user authentication
 type LoginUseCase interface {
-	Execute(ctx context.Context, req dto.LoginRequest) (*dto.AuthResponse, error)
+	Execute(ctx context.Context, req dto.AuthRequest) (*dto.AuthResponse, error)
 }
 
 type loginUseCase struct {
@@ -39,7 +39,7 @@ func NewLoginUseCase(
 }
 
 // Execute authenticates a user
-func (uc *loginUseCase) Execute(ctx context.Context, req dto.LoginRequest) (*dto.AuthResponse, error) {
+func (uc *loginUseCase) Execute(ctx context.Context, req dto.AuthRequest) (*dto.AuthResponse, error) {
 	// Find user by username
 	user, err := uc.userRepo.FindByUsername(ctx, req.Username)
 	if err != nil {

@@ -2,29 +2,14 @@ package database
 
 import (
 	"fmt"
-	"todolist/internal/infrastructure/database/model"
 
 	"gorm.io/gorm"
 )
 
 // Migrate runs all database migrations
-func Migrate(db *gorm.DB) error {
-	// Enable UUID extension for PostgreSQL
-	if err := enableUUIDExtension(db); err != nil {
-		return fmt.Errorf("failed to enable UUID extension: %w", err)
-	}
-
+func Migrate(db *gorm.DB, models ...any) error {
 	// Auto migrate all models
-	if err := db.AutoMigrate(
-		&model.Person{},
-		&model.User{},
-		&model.Todo{},
-		&model.Tag{},
-		&model.TodoTag{},
-		&model.AuditLog{},
-		&model.LoginAttempt{},
-		&model.TodoDailyStatistics{},
-	); err != nil {
+	if err := db.AutoMigrate(models...); err != nil {
 		return fmt.Errorf("failed to auto migrate: %w", err)
 	}
 
@@ -44,11 +29,6 @@ func Migrate(db *gorm.DB) error {
 	}
 
 	return nil
-}
-
-// enableUUIDExtension enables uuid-ossp extension for PostgreSQL
-func enableUUIDExtension(db *gorm.DB) error {
-	return db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`).Error
 }
 
 // createIndexes creates additional indexes for better performance

@@ -3,17 +3,17 @@ package log
 import (
 	"fmt"
 	"time"
-	smart "todolist/pkg/log"
+	"todolist/pkg/log"
 )
 
 type SmartLogAdapter struct {
-	*smart.Logger
+	*log.Logger
 }
 
 // Ensure it implements both interfaces
 var (
-	_ Log         = (*SmartLogAdapter)(nil)
-	_ ExtendedLog = (*SmartLogAdapter)(nil)
+	_ log.Interface   = (*SmartLogAdapter)(nil)
+	_ log.ExtendedLog = (*SmartLogAdapter)(nil)
 )
 
 // Print implements Logging.
@@ -87,21 +87,21 @@ func (s *SmartLogAdapter) Panicf(format string, args ...any) {
 }
 
 // WithError implements Logging.
-func (s *SmartLogAdapter) WithError(err error) Log {
+func (s *SmartLogAdapter) WithError(err error) log.Interface {
 	newLogger := s.With().Err(err).Logger()
-	return &SmartLogAdapter{&smart.Logger{Logger: &newLogger}}
+	return &SmartLogAdapter{&log.Logger{Logger: &newLogger}}
 }
 
 // WithField implements Logging.
-func (s *SmartLogAdapter) WithField(key string, value any) Log {
+func (s *SmartLogAdapter) WithField(key string, value any) log.Interface {
 	newLogger := s.With().Interface(key, value).Logger()
-	return &SmartLogAdapter{&smart.Logger{Logger: &newLogger}}
+	return &SmartLogAdapter{&log.Logger{Logger: &newLogger}}
 }
 
 // WithFields implements Logging.
-func (s *SmartLogAdapter) WithFields(fields map[string]any) Log {
+func (s *SmartLogAdapter) WithFields(fields map[string]any) log.Interface {
 	newLogger := s.With().Fields(fields).Logger()
-	return &SmartLogAdapter{&smart.Logger{Logger: &newLogger}}
+	return &SmartLogAdapter{&log.Logger{Logger: &newLogger}}
 }
 
 // Success implements SmartLogging.
@@ -130,7 +130,7 @@ func (s *SmartLogAdapter) API(method, path string, statusCode int, duration time
 }
 
 // WithContext implements SmartLogging.
-func (s *SmartLogAdapter) WithContext(ctx map[string]interface{}) ExtendedLog {
+func (s *SmartLogAdapter) WithContext(ctx map[string]interface{}) log.ExtendedLog {
 	smartLogger := s.Logger.WithContext(ctx)
 	return &SmartLogAdapter{smartLogger}
 }

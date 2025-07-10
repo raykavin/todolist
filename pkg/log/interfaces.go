@@ -2,11 +2,11 @@ package log
 
 import "time"
 
-type Log interface {
+type Interface interface {
 	// Context methods - returns a logger based off the root logger and decorates it with the given context and arguments.
-	WithField(key string, value any) Log
-	WithFields(fields map[string]any) Log
-	WithError(err error) Log
+	WithField(key string, value any) Interface
+	WithFields(fields map[string]any) Interface
+	WithError(err error) Interface
 
 	// Standard log functions
 	Print(args ...any)
@@ -29,7 +29,7 @@ type Log interface {
 
 // ExtendedLog interface for smart logging features
 type ExtendedLog interface {
-	Log // Base interface
+	Interface // Base interface
 
 	// Enhanced logging methods
 	Success(msg string)

@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"todolist/internal/application/dto"
-	"todolist/internal/application/service"
 	personRepo "todolist/internal/domain/person/repository"
 	userRepo "todolist/internal/domain/user/repository"
 	vo "todolist/internal/domain/user/valueobject"
+	"todolist/internal/dto"
+	"todolist/internal/service"
 )
 
 var (
@@ -22,15 +22,17 @@ type LoginUseCase interface {
 }
 
 type loginUseCase struct {
-	userRepo     userRepo.UserRepository
-	personRepo   personRepo.PersonRepository
-	tokenService service.TokenService
+	userRepo        userRepo.UserRepository
+	personRepo      personRepo.PersonRepository
+	tokenService    service.TokenService
+	tokenIssuerName string
 }
 
 // NewLoginUseCase creates a new instance of LoginUseCase
 func NewLoginUseCase(
 	userRepo userRepo.UserRepository,
 	personRepo personRepo.PersonRepository,
+	tokenIssuerName string,
 ) LoginUseCase {
 	return &loginUseCase{
 		userRepo:   userRepo,
@@ -62,8 +64,8 @@ func (uc *loginUseCase) Execute(ctx context.Context, req dto.AuthRequest) (*dto.
 		return nil, err
 	}
 
-	// Generate token (simplified - in real app, use JWT or similar)
-	token, err := uc.tokenService.Generate(user.ID())
+	// Generate token
+	token, err := uc.tokenService.Generate(uc.tokenIssuerName, user.ID())
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %w", err)
 	}

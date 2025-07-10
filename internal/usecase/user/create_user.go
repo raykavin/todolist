@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"time"
-	"todolist/internal/application/dto"
 	personEnt "todolist/internal/domain/person/entity"
 	"todolist/internal/domain/person/repository"
 	"todolist/internal/domain/user/entity"
 	userRepo "todolist/internal/domain/user/repository"
 	vo "todolist/internal/domain/user/valueobject"
+	"todolist/internal/dto"
 )
 
 var (

@@ -2,10 +2,10 @@ package usecase
 
 import (
 	"context"
-	"todolist/internal/application/dto"
 	"todolist/internal/domain/shared"
 	"todolist/internal/domain/todo/repository"
 	vo "todolist/internal/domain/todo/valueobject"
+	"todolist/internal/dto"
 )
 
 // ListTodosUseCase handles listing todos with filters

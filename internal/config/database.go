@@ -14,18 +14,18 @@ import "time"
  */
 
 type databaseService struct {
-	ConnectionString    string        `mapstructure:"connection_string"`
-	Driver              string        `mapstructure:"driver"`
+	DSN                 string        `mapstructure:"dsn"`
+	Dialector           string        `mapstructure:"dialector"`
 	IdleConnectionsTime time.Duration `mapstructure:"idle_connections_time"`
 	IdleMaxConnections  int           `mapstructure:"idle_max_connections"`
 	MaxOpenConnections  int           `mapstructure:"max_open_connections"`
 }
 
 // GetConnectionString returns the database connection string.
-func (d databaseService) GetConnString() string { return d.ConnectionString }
+func (d databaseService) GetDSN() string { return d.DSN }
 
-// GetDriver returns the database driver name.
-func (d databaseService) GetDriver() string { return d.Driver }
+// GetDriver returns the database dialector name.
+func (d databaseService) GetDialector() string { return d.Dialector }
 
 // GetIdleConnsTime returns the idle connections time duration.
 func (c databaseService) GetIdleConnsTime() time.Duration { return c.IdleConnectionsTime }

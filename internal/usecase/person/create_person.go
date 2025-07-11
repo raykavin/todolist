@@ -3,11 +3,11 @@ package usecase
 import (
 	"context"
 	"time"
-	"todolist/internal/application/dto"
 	"todolist/internal/domain/person/entity"
 	"todolist/internal/domain/person/repository"
 	vo "todolist/internal/domain/person/valueobject"
 	sharedvo "todolist/internal/domain/shared/valueobject"
+	"todolist/internal/dto"
 )
 
 // CreatePersonUseCase handles person creation

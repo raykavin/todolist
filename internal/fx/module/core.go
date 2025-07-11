@@ -12,7 +12,7 @@ import (
 	"todolist/internal/adapter/log"
 	"todolist/internal/config"
 	pkgConfig "todolist/pkg/config"
-	smart "todolist/pkg/log"
+	pkgLog "todolist/pkg/log"
 )
 
 // Config related types
@@ -116,14 +116,14 @@ func getDefaultDatabase(cfg *config.Config) (config.DatabaseServiceProvider, err
 }
 
 // Logger provider
-func NewLogger(params LoggerParams) (log.Log, error) {
+func NewLogger(params LoggerParams) (pkgLog.ExtendedLog, error) {
 	const (
 		timeFormat    = "2006-01-02 15:04:05"
 		colorEnabled  = true
 		callerEnabled = false
 	)
 
-	logger, err := smart.New(
+	logger, err := pkgLog.NewSmartLog(
 		params.Config.GetLoggerLevel(),
 		timeFormat,
 		colorEnabled,
@@ -133,7 +133,7 @@ func NewLogger(params LoggerParams) (log.Log, error) {
 		return nil, fmt.Errorf("error initializing smart logger: %w", err)
 	}
 
-	return log.SmartLogAdapter{Logger: logger}, nil
+	return &log.SmartLogAdapter{Logger: logger}, nil
 }
 
 // Lifecycle hooks

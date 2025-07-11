@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"context"
-	"todolist/internal/application/dto"
 	"todolist/internal/domain/person/repository"
 	"todolist/internal/domain/shared"
+	"todolist/internal/dto"
 )
 
 // GetPersonUseCase handles retrieving a person

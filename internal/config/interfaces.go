@@ -53,8 +53,8 @@ type WebConfigProvider interface {
 
 // DatabaseServiceProvider defines the interface for a database service
 type DatabaseServiceProvider interface {
-	GetDriver() string               // Returns the database driver name
-	GetConnString() string           // Returns the database connection string
+	GetDialector() string            // Returns the database dialector (e.g., "mysql", "mariadb", "postgres", "sqlite")
+	GetDSN() string                  // Returns the Data Source Name (DSN) for the database connection
 	GetIdleConnsTime() time.Duration // Returns the idle connections time duration
 	GetIdleMaxConns() int            // Returns the maximum number of idle connections
 	GetMaxOpenConns() int            // Returns the maximum number of open connections

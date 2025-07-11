@@ -72,7 +72,7 @@ var (
 // 	return NewSmartZerologContext(logger)
 // }
 
-func New(level, dateTimeLayout string, colored, jsonFormat bool) (*Logger, error) {
+func NewSmartLog(level, dateTimeLayout string, colored, jsonFormat bool) (*Logger, error) {
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 
 	logMode, err := zerolog.ParseLevel(level)

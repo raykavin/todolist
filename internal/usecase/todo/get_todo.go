@@ -2,10 +2,10 @@ package usecase
 
 import (
 	"context"
-	"todolist/internal/application/dto"
 	"todolist/internal/domain/shared"
 	"todolist/internal/domain/todo/repository"
 	"todolist/internal/domain/todo/service"
+	"todolist/internal/dto"
 )
 
 // GetTodoUseCase handles retrieving a single todo

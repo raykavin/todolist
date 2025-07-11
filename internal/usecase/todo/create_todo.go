@@ -3,12 +3,12 @@ package usecase
 import (
 	"context"
 	"time"
-	"todolist/internal/application/dto"
 	sharedvo "todolist/internal/domain/shared/valueobject"
 	"todolist/internal/domain/todo/entity"
 	"todolist/internal/domain/todo/repository"
 	"todolist/internal/domain/todo/service"
 	vo "todolist/internal/domain/todo/valueobject"
+	"todolist/internal/dto"
 )
 
 // CreateTodoUseCase handles the creation of new todos

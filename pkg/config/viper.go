@@ -401,12 +401,12 @@ func (cl *ConfigLoader[T]) GetViper() *viper.Viper {
 }
 
 // SetConfigValue sets a configuration value programmatically
-func (cl *ConfigLoader[T]) SetConfigValue(key string, value interface{}) {
+func (cl *ConfigLoader[T]) SetConfigValue(key string, value any) {
 	cl.viper.Set(key, value)
 }
 
 // GetConfigValue gets a configuration value
-func (cl *ConfigLoader[T]) GetConfigValue(key string) interface{} {
+func (cl *ConfigLoader[T]) GetConfigValue(key string) any {
 	return cl.viper.Get(key)
 }
 

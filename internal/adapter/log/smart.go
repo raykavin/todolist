@@ -130,7 +130,7 @@ func (s *SmartLogAdapter) API(method, path string, statusCode int, duration time
 }
 
 // WithContext implements SmartLogging.
-func (s *SmartLogAdapter) WithContext(ctx map[string]interface{}) log.ExtendedLog {
+func (s *SmartLogAdapter) WithContext(ctx map[string]any) log.ExtendedLog {
 	smartLogger := s.Logger.WithContext(ctx)
 	return &SmartLogAdapter{smartLogger}
 }

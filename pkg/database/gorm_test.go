@@ -583,7 +583,7 @@ func TestCustomLoggerAdapter(t *testing.T) {
 
 	t.Run("Info", func(t *testing.T) {
 		mockLog.On("WithField", "source", mock.Anything).Return(mockLog).Once()
-		mockLog.On("Infof", "test %s", []interface{}{"message"}).Once()
+		mockLog.On("Infof", "test %s", []any{"message"}).Once()
 
 		adapter.Info(context.Background(), "test %s", "message")
 		mockLog.AssertExpectations(t)
@@ -601,7 +601,7 @@ func TestCustomLoggerAdapter(t *testing.T) {
 
 	t.Run("Warn", func(t *testing.T) {
 		mockLog.On("WithField", "source", mock.Anything).Return(mockLog).Once()
-		mockLog.On("Warnf", "warning %s", []interface{}{"test"}).Once()
+		mockLog.On("Warnf", "warning %s", []any{"test"}).Once()
 
 		adapter.Warn(context.Background(), "warning %s", "test")
 		mockLog.AssertExpectations(t)
@@ -609,14 +609,14 @@ func TestCustomLoggerAdapter(t *testing.T) {
 
 	t.Run("Error", func(t *testing.T) {
 		mockLog.On("WithField", "source", mock.Anything).Return(mockLog).Once()
-		mockLog.On("Errorf", "error %s", []interface{}{"test"}).Once()
+		mockLog.On("Errorf", "error %s", []any{"test"}).Once()
 
 		adapter.Error(context.Background(), "error %s", "test")
 		mockLog.AssertExpectations(t)
 	})
 
 	t.Run("Trace with error", func(t *testing.T) {
-		mockLog.On("WithFields", mock.MatchedBy(func(fields map[string]interface{}) bool {
+		mockLog.On("WithFields", mock.MatchedBy(func(fields map[string]any) bool {
 			return fields["error"] != nil && fields["duration"] != nil && fields["rows"] != nil
 		})).Return(mockLog).Once()
 		mockLog.On("Errorf", "SQL Error: %s", "SELECT * FROM users").Once()
@@ -629,7 +629,7 @@ func TestCustomLoggerAdapter(t *testing.T) {
 
 	t.Run("Trace with slow query", func(t *testing.T) {
 		adapter.SlowThreshold = 1 * time.Millisecond
-		mockLog.On("WithFields", mock.MatchedBy(func(fields map[string]interface{}) bool {
+		mockLog.On("WithFields", mock.MatchedBy(func(fields map[string]any) bool {
 			return fields["slow"] == true && fields["threshold"] != nil
 		})).Return(mockLog).Once()
 		mockLog.On("Warnf", "SLOW SQL: %s", "SELECT * FROM users").Once()
@@ -647,7 +647,7 @@ func TestCustomLoggerAdapter(t *testing.T) {
 			LogLevel:      logger.Info,
 			SlowThreshold: 1 * time.Second,
 		}
-		mockLog.On("WithFields", mock.MatchedBy(func(fields map[string]interface{}) bool {
+		mockLog.On("WithFields", mock.MatchedBy(func(fields map[string]any) bool {
 			return fields["duration"] != nil && fields["rows"] != nil
 		})).Return(mockLog).Once()
 		mockLog.On("Debugf", "SQL: %s", "SELECT * FROM users").Once()

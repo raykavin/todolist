@@ -348,21 +348,21 @@ func (l *customLoggerAdapter) LogMode(level logger.LogLevel) logger.Interface {
 }
 
 // Info implements logger.Interface
-func (l *customLoggerAdapter) Info(ctx context.Context, msg string, data ...interface{}) {
+func (l *customLoggerAdapter) Info(ctx context.Context, msg string, data ...any) {
 	if l.LogLevel >= logger.Info {
 		l.log.WithField("source", utils.FileWithLineNum()).Infof(msg, data...)
 	}
 }
 
 // Warn implements logger.Interface
-func (l *customLoggerAdapter) Warn(ctx context.Context, msg string, data ...interface{}) {
+func (l *customLoggerAdapter) Warn(ctx context.Context, msg string, data ...any) {
 	if l.LogLevel >= logger.Warn {
 		l.log.WithField("source", utils.FileWithLineNum()).Warnf(msg, data...)
 	}
 }
 
 // Error implements logger.Interface
-func (l *customLoggerAdapter) Error(ctx context.Context, msg string, data ...interface{}) {
+func (l *customLoggerAdapter) Error(ctx context.Context, msg string, data ...any) {
 	if l.LogLevel >= logger.Error {
 		l.log.WithField("source", utils.FileWithLineNum()).Errorf(msg, data...)
 	}

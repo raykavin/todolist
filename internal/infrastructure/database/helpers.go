@@ -9,7 +9,7 @@ package database
  * or reusable mappers for converting rows to domain entities.
  *
  * Helpers reduce duplication and make repository code more maintainable.
-*/
+ */
 
 import (
 	"fmt"
@@ -47,7 +47,7 @@ func applyFilter(query *gorm.DB, filter shared.Filter) *gorm.DB {
 	case shared.FilterOperatorIn:
 		return query.Where(fmt.Sprintf("%s IN ?", filter.Field), filter.Value)
 	case shared.FilterOperatorBetween:
-		if values, ok := filter.Value.([]interface{}); ok && len(values) == 2 {
+		if values, ok := filter.Value.([]any); ok && len(values) == 2 {
 			return query.Where(fmt.Sprintf("%s BETWEEN ? AND ?", filter.Field), values[0], values[1])
 		}
 	}
@@ -86,7 +86,7 @@ func BuildSearchQuery(query *gorm.DB, searchTerm string, fields ...string) *gorm
 
 	searchTerm = strings.TrimSpace(searchTerm)
 	conditions := make([]string, len(fields))
-	values := make([]interface{}, len(fields))
+	values := make([]any, len(fields))
 
 	for i, field := range fields {
 		conditions[i] = fmt.Sprintf("%s ILIKE ?", field)
@@ -112,15 +112,15 @@ func SoftDelete(query *gorm.DB) *gorm.DB {
 
 // Paginate creates a paginated response
 type PaginatedResult struct {
-	Data       interface{} `json:"data"`
-	Total      int64       `json:"total"`
-	Page       int         `json:"page"`
-	PageSize   int         `json:"page_size"`
-	TotalPages int         `json:"total_pages"`
+	Data       any   `json:"data"`
+	Total      int64 `json:"total"`
+	Page       int   `json:"page"`
+	PageSize   int   `json:"page_size"`
+	TotalPages int   `json:"total_pages"`
 }
 
 // Paginate applies pagination and returns paginated result
-func Paginate(db *gorm.DB, page, pageSize int, result interface{}) (*PaginatedResult, error) {
+func Paginate(db *gorm.DB, page, pageSize int, result any) (*PaginatedResult, error) {
 	var total int64
 
 	// Count total records
@@ -153,7 +153,7 @@ func Paginate(db *gorm.DB, page, pageSize int, result interface{}) (*PaginatedRe
 }
 
 // BatchInsert performs batch insert with chunk size
-func BatchInsert(db *gorm.DB, records interface{}, chunkSize int) error {
+func BatchInsert(db *gorm.DB, records any, chunkSize int) error {
 	return db.CreateInBatches(records, chunkSize).Error
 }
 

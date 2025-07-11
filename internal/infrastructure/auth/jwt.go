@@ -13,7 +13,7 @@ package auth
  *
  * This implementation is used when you want lightweight, self-contained tokens
  * without external dependencies.
-*/
+ */
 
 import (
 	"errors"
@@ -67,7 +67,7 @@ func (s *jwtToken) Generate(issuerName string, userID int64) (string, error) {
 
 // Validate parses and validates the token string, returning the user ID if valid.
 func (s *jwtToken) Validate(tokenStr string) (int64, error) {
-	token, err := jwt.ParseWithClaims(tokenStr, &jwtCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &jwtCustomClaims{}, func(token *jwt.Token) (any, error) {
 		// Verify the signing method is HMAC
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")

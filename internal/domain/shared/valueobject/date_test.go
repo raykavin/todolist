@@ -9,7 +9,7 @@ import (
 func TestNewDate(t *testing.T) {
 	tests := []struct {
 		name    string
-		input   interface{}
+		input   any
 		wantErr bool
 		check   func(Date) bool
 	}{

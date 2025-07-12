@@ -1,4 +1,4 @@
-package banner
+package terminal
 
 import (
 	"fmt"

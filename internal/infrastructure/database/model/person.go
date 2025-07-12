@@ -15,7 +15,7 @@ type Person struct {
 	Name      string         `gorm:"type:varchar(100);not null"`
 	Email     string         `gorm:"type:varchar(255);not null;uniqueIndex"`
 	Phone     string         `gorm:"type:varchar(20);not null"`
-	TxID      string         `gorm:"type:varchar(20);not null"`
+	TaxID     string         `gorm:"type:varchar(20);not null"`
 	BirthDate *time.Time     `gorm:"type:date"`
 
 	// Relationships

@@ -78,10 +78,10 @@ func (p Person) Phone() string { return p.phone }
 // BirthDate returns the birth date of the person
 func (p Person) BirthDate() sharedvo.Date { return p.birthDate }
 
-// Update methods
+// Setter methods
 
-// UpdateName updates the name of the person
-func (p *Person) UpdateName(name string) error {
+// SetName updates the name of the person
+func (p *Person) SetName(name string) error {
 	if name == "" {
 		return ErrInvalidPersonName
 	}
@@ -90,14 +90,14 @@ func (p *Person) UpdateName(name string) error {
 	return nil
 }
 
-// UpdateEmail updates the email of the person
-func (p *Person) UpdateEmail(email vo.Email) {
+// SetEmail updates the email of the person
+func (p *Person) SetEmail(email vo.Email) {
 	p.email = email
 	p.SetAsModified()
 }
 
 // UpdatePhone updates the phone number of the person
-func (p *Person) UpdatePhone(phone string) error {
+func (p *Person) SetPhone(phone string) error {
 	if phone == "" {
 		return ErrInvalidPhone
 	}

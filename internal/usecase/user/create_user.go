@@ -71,19 +71,13 @@ func (uc *createUserUseCase) Execute(ctx context.Context, req dto.CreateUserRequ
 		return nil, err
 	}
 
-	// Create role value object
-	// role := vo.UserRole(req.Role)
-	// if !role.IsValid() {
-	// 	return nil, errors.New("invalid role")
-	// }
-
 	// Create user entity
 	user, err := entity.NewUser(
 		time.Now().Unix(),
 		req.PersonID,
 		req.Username,
 		password,
-		// role, Automatically set by entity
+		vo.RoleUser,
 	)
 	if err != nil {
 		return nil, err

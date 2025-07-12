@@ -31,6 +31,7 @@ func NewUser(
 	personID int64,
 	username string,
 	password vo.Password,
+	role vo.UserRole,
 ) (*User, error) {
 	if personID == 0 {
 		return nil, ErrInvalidPersonID
@@ -45,8 +46,8 @@ func NewUser(
 		personID: personID,
 		username: username,
 		password: password,
+		role:     role,
 		status:   vo.StatusActive,
-		role:     vo.RoleUser,
 	}, nil
 }
 

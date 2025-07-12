@@ -14,7 +14,7 @@ package database
 import (
 	"fmt"
 	"time"
-	"todolist/internal/infrastructure/model"
+	"todolist/internal/infrastructure/database/model"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"

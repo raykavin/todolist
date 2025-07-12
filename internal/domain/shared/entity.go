@@ -36,3 +36,12 @@ func (e Entity) Age() time.Duration { return time.Since(e.createdAt) }
 
 // SetAsModified updates the modification timestamp
 func (e *Entity) SetAsModified() { e.updateAt = time.Now() }
+
+// SetID sets the entity's ID
+func (e *Entity) SetID(id int64) { e.id = id }
+
+// SetCreatedAt sets the entity's creation timestamp
+func (e *Entity) SetCreatedAt(t time.Time) { e.createdAt = t }
+
+// SetUpdatedAt sets the entity's last update timestamp
+func (e *Entity) SetUpdatedAt(t time.Time) { e.updateAt = t }

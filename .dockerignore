@@ -1,0 +1,14 @@
+*/kubernetes/
+*/terraform/
+scripts/
+docs/
+test/
+.github/
+.devcontainer/
+.vscode
+*.dev.yml
+*.test.yml
+*.prod.yml
+docker-compose.yaml
+.golangci.yml
+Makefile

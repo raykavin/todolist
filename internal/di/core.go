@@ -128,7 +128,6 @@ func CoreModule(configFile string, watchConfig bool) fx.Option {
 			NewContext,
 			NewWaitGroup,
 			NewConfig,
-			NewLogger,
 		),
 		// Register lifecycle hooks
 		fx.Invoke(ContextCancelOnStop),

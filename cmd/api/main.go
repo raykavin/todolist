@@ -35,7 +35,7 @@ func main() {
 		fx.WithLogger(configureFxLogger),
 
 		// Dependency injection modules
-		di.CoreModule(*configFile, *watchConfig), // Core: context, config, logger, wait group
+		di.CoreModule(*configFile, *watchConfig), // Core: context, config, wait group
 		di.LoggerModule(),                        // Logger: log infrastructure
 		di.DatabasesModule(),                     // Databases: database infrastructures
 		di.RepositoriesModule(),                  // Repositories: database repositories
@@ -96,7 +96,7 @@ func gracefulShutdown(
 	log log.ExtendedLog,
 	wg *sync.WaitGroup,
 ) error {
-	log.Info("Shutting down PON Watcher application...")
+	log.Info("Shutting down Todo application...")
 
 	// Cancel the main context
 	cancel()

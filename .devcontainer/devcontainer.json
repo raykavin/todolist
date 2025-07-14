@@ -1,8 +1,8 @@
 {
-    "name": "TODO List DevContainer (Golang)",
+    "name": "Todo List DevContainer (Golang)",
     "workspaceFolder": "/workspaces/app",
     "build": {
-        "dockerfile": "Dockerfile",
+        "dockerfile": "../deploy/docker/Dockerfile.dev",
         "context": ".."
     },
     "forwardPorts": [

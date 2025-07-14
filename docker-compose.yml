@@ -1,0 +1,59 @@
+# Global variables
+x-restart-policy: &restart-policy
+  restart: on-failure
+
+x-timezone: &timezone
+  TZ: America/Belem
+
+services:
+  postgres:
+    image: postgres:14.6
+    container_name: todolist_postgres
+    <<: *restart-policy
+    networks:
+      - todolist
+    ports:
+      - "10841:5432"
+    environment:
+      <<: *timezone
+      POSTGRES_USER: todolist
+      POSTGRES_PASSWORD: Fo0#97oXggSQ
+      POSTGRES_DB: todolist
+    volumes:
+      - ./services/postgres/data:/var/lib/postgresql/data
+      - ./services/postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todolist"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  todolist:
+    image: registry.mba.corp:10195/todolist/todolist:${VERSION:-1.0.0}
+    container_name: todolist_todolist
+    <<: *restart-policy
+    networks:
+      - todolist
+    ports:
+      - "10840:3000"
+    tty: true
+    volumes:
+      # Configuration
+      - ./services/todolist/config.yml:/todolist/config.yml:ro
+
+      # Persistent data
+      # - ./services/todolist/.data:/todolist/.data:rw
+
+      # Templates and resources
+      # - ./services/todolist/templates:/todolist/templates:ro
+      # - ./services/todolist/firebase:/todolist/firebase:ro
+      # - ./services/todolist/ssl:/todolist/ssl:ro
+      # - ./services/todolist/sql:/todolist/sql:ro
+      # - ./services/todolist/graphql:/todolist/graphql:ro
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+
+

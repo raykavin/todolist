@@ -40,7 +40,7 @@ func main() {
 		module.ApplicationServices(),           // Services: application services
 		module.DomainServices(),                // Services: domain services
 		module.UseCases(),                      // UseCases: business logic
-		module.HTTPHandler(),                   // HTTPHandler: HTTP server and routes
+		module.HTTPHandlers(),                  // HTTPHandler: HTTP server and routes
 
 		// Application lifecycle hooks
 		fx.Invoke(displayAppInfo),
@@ -63,8 +63,8 @@ func configureFxLogger() fxevent.Logger {
 func displayAppInfo(config config.ApplicationProvider) {
 	terminal.PrintBanner(config.GetName())
 	terminal.PrintText(config.GetDescription())
-	terminal.PrintText("S.O.G.E - Operational, Management and Strategic Systems")
-	terminal.PrintText(fmt.Sprintf("Copyright (c) %d I R Tecnologia, All Rights Reserved!",
+	terminal.PrintText("S.O.G.E - Sistemas Operacionais, Gerenciais e Estratégicos")
+	terminal.PrintText(fmt.Sprintf("Copyright (c) %d I R Tecnologia, Todos os direitos reservados!",
 		time.Now().Year()))
 	terminal.PrintHeader(fmt.Sprintf("Version: %s", config.GetVersion()))
 }
@@ -135,7 +135,7 @@ func handleAppLifecycle(
 }
 
 // signalHandler listens for OS signals to trigger application shutdown
-func signalHandler(shutdowner fx.Shutdowner, log log.Smart) {
+func signalHandler(shutdowner fx.Shutdowner, log log.ExtendedLog) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 

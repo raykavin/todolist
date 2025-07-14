@@ -15,6 +15,13 @@ import (
 
 type Logger struct {
 	*zerolog.Logger
+	useEmoji bool
+}
+
+type logSymbolData struct {
+	Text        string
+	EmojiPrefix string
+	EmojiSuffix string
 }
 
 // Color scheme for  output
@@ -35,44 +42,62 @@ var (
 	fieldKeyColor  = color.New(color.FgHiYellow)
 	fieldValColor  = color.New(color.FgCyan)
 
-	// Special symbols and decorations
-	symbols = map[string]string{
-		"trace": "◇",
-		"debug": "◈",
-		"info":  "◉",
-		"warn":  "◎",
-		"error": "✖",
-		"fatal": "☠",
-		"panic": "💥",
+	// Log levels colors
+	levelColors = map[string]*color.Color{
+		zerolog.LevelTraceValue: traceColor,
+		zerolog.LevelDebugValue: debugColor,
+		zerolog.LevelInfoValue:  infoColor,
+		zerolog.LevelWarnValue:  warnColor,
+		zerolog.LevelErrorValue: errorColor,
+		zerolog.LevelFatalValue: fatalColor,
+		zerolog.LevelPanicValue: panicColor,
+	}
+
+	// Log levels with text and emojis
+	levels = map[string]logSymbolData{
+		"trace": {
+			Text:        "TRAC",
+			EmojiPrefix: "◇",
+		},
+		"debug": {
+			Text:        "DEBG",
+			EmojiPrefix: "◈",
+		},
+		"info": {
+			Text:        "INFO",
+			EmojiPrefix: "◉",
+		},
+		"warn": {
+			Text:        "WARN",
+			EmojiPrefix: "◎",
+		},
+		"error": {
+			Text:        "ERRO",
+			EmojiPrefix: "✖",
+		},
+		"fatal": {
+			Text: "FATL",
+		},
+		"panic": {
+			Text:        "PANC",
+			EmojiPrefix: "☠",
+		},
+		"unknown": {
+			Text:        "UNKN",
+			EmojiPrefix: "❓",
+		},
+		"default": {
+			Text:        "UNKN",
+			EmojiPrefix: "◯",
+		},
 	}
 )
 
-// // NewSmartZerologContext creates a new smart zerolog context adapter
-// func NewSmartZerologContext(logger *smart.Logger) *SmartLogAdapter {
-// 	return &SmartLogAdapter{Logger: logger}
-// }
-
-// NewSmartZerologContextFromConfig creates a new smart zerolog context with configuration
-// func NewSmartZerologContextFromConfig(level, dateTimeLayout string, colored, jsonFormat bool) (*SmartLogAdapter, error) {
-// 	logger, err := smart.New(level, dateTimeLayout, colored, jsonFormat)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return NewSmartZerologContext(logger), nil
-// }
-
-// // ========== Migration Helper ==========
-
-// // LegacyZerologContext provides backward compatibility
-// type LegacyZerologContext = SmartLogAdapter
-
-// // NewZerologContext creates a legacy context (for backward compatibility)
-// // Deprecated: Use NewSmartZerologContext instead
-// func NewZerologContext(logger *smart.Logger) *LegacyZerologContext {
-// 	return NewSmartZerologContext(logger)
-// }
-
-func NewSmartLog(level, dateTimeLayout string, colored, jsonFormat bool) (*Logger, error) {
+func NewSmartLog(
+	level, dateTimeLayout string,
+	colored, jsonFormat bool,
+	useEmoji bool,
+) (*Logger, error) {
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 
 	logMode, err := zerolog.ParseLevel(level)
@@ -103,9 +128,11 @@ func NewSmartLog(level, dateTimeLayout string, colored, jsonFormat bool) (*Logge
 		}
 
 		if colored {
-			output.FormatLevel = formatLevel
 			output.FormatMessage = formatMessage
 			output.FormatCaller = formatCaller
+			output.FormatLevel = func(i interface{}) string {
+				return formatLevel(i, useEmoji)
+			}
 			output.FormatTimestamp = func(i any) string {
 				return formatTimestamp(i, dateTimeLayout)
 			}
@@ -120,38 +147,35 @@ func NewSmartLog(level, dateTimeLayout string, colored, jsonFormat bool) (*Logge
 		CallerWithSkipFrameCount(3).
 		Logger()
 
-	return &Logger{&logger}, nil
+	return &Logger{&logger, useEmoji}, nil
 }
 
-func formatLevel(i any) string {
+func formatLevel(i any, useEmoji bool) string {
 	levelStr, ok := i.(string)
 	if !ok {
+		if !useEmoji {
+			return "UNKNOWN"
+		}
+
 		return "❓ UNKNOWN"
 	}
 
-	symbol := symbols[levelStr]
-	if symbol == "" {
-		symbol = "◯"
+	ldata, ok := levels[levelStr]
+	if !ok {
+		ldata = levels["default"]
 	}
 
-	switch levelStr {
-	case zerolog.LevelTraceValue:
-		return traceColor.Sprintf(" %s TRACE ", symbol)
-	case zerolog.LevelDebugValue:
-		return debugColor.Sprintf(" %s DEBUG ", symbol)
-	case zerolog.LevelInfoValue:
-		return infoColor.Sprintf(" %s INFO  ", symbol)
-	case zerolog.LevelWarnValue:
-		return warnColor.Sprintf(" %s WARN  ", symbol)
-	case zerolog.LevelErrorValue:
-		return errorColor.Sprintf(" %s ERROR ", symbol)
-	case zerolog.LevelFatalValue:
-		return fatalColor.Sprintf(" %s FATAL ", symbol)
-	case zerolog.LevelPanicValue:
-		return panicColor.Sprintf(" %s PANIC ", symbol)
-	default:
-		return color.HiWhiteString(" %s UNKNOWN ", symbol)
+	emojiPrefix := ""
+	if useEmoji {
+		emojiPrefix = ldata.EmojiPrefix
 	}
+
+	col, ok := levelColors[levelStr]
+	if !ok {
+		col = color.New(color.FgHiWhite)
+	}
+
+	return col.Sprintf(" %s %s ", emojiPrefix, ldata.Text)
 }
 
 func formatMessage(i any) string {
@@ -275,11 +299,20 @@ func formatFieldValue(i any) string {
 
 // Enhanced methods for  logging
 func (l *Logger) Success(msg string) {
-	l.Info().Str("status", "✅ SUCCESS").Msg(msg)
+	text := "SUCCESS"
+	if l.useEmoji {
+		text = fmt.Sprintf("✅ %s", text)
+	}
+	l.Info().Str("status", text).Msg(msg)
 }
 
 func (l *Logger) Failure(msg string) {
-	l.Error().Str("status", "❌ FAILURE").Msg(msg)
+	text := "FAILURE"
+	if l.useEmoji {
+		text = fmt.Sprintf("❌ %s", text)
+	}
+
+	l.Error().Str("status", text).Msg(msg)
 }
 
 func (l *Logger) Progress(msg string, current, total int) {
@@ -294,53 +327,63 @@ func (l *Logger) Progress(msg string, current, total int) {
 }
 
 func (l *Logger) Benchmark(name string, duration time.Duration) {
-	var emoji string
-	switch {
-	case duration < time.Millisecond:
-		emoji = "⚡" // Very fast
-	case duration < 10*time.Millisecond:
-		emoji = "🚀" // Fast
-	case duration < 100*time.Millisecond:
-		emoji = "🏃" // Medium
-	case duration < time.Second:
-		emoji = "🚶" // Slow
-	default:
-		emoji = "🐌" // Very slow
+
+	levent := l.Debug()
+
+	if l.useEmoji {
+		var emoji string
+		switch {
+		case duration < time.Millisecond:
+			emoji = "⚡" // Very fast
+		case duration < 10*time.Millisecond:
+			emoji = "🚀" // Fast
+		case duration < 100*time.Millisecond:
+			emoji = "🏃" // Medium
+		case duration < time.Second:
+			emoji = "🚶" // Slow
+		default:
+			emoji = "🐌" // Very slow
+		}
+
+		levent.Str("benchmark", emoji)
 	}
 
-	l.Debug().
-		Str("benchmark", emoji).
-		Str("duration", duration.String()).
+	levent.Str("duration", duration.String()).
 		Msgf("Benchmark: %s", name)
 }
 
 func (l *Logger) API(method, path string, statusCode int, duration time.Duration) {
 	var level zerolog.Level
-	var statusEmoji string
 
-	switch {
-	case statusCode >= 200 && statusCode < 300:
-		level = zerolog.InfoLevel
-		statusEmoji = "✅"
-	case statusCode >= 300 && statusCode < 400:
-		level = zerolog.InfoLevel
-		statusEmoji = "🔄"
-	case statusCode >= 400 && statusCode < 500:
-		level = zerolog.WarnLevel
-		statusEmoji = "⚠️"
-	case statusCode >= 500:
-		level = zerolog.ErrorLevel
-		statusEmoji = "❌"
-	default:
-		level = zerolog.InfoLevel
-		statusEmoji = "❓"
+	levent := l.WithLevel(level)
+
+	if l.useEmoji {
+		var statusEmoji string
+		switch {
+		case statusCode >= 200 && statusCode < 300:
+			level = zerolog.InfoLevel
+			statusEmoji = "✅"
+		case statusCode >= 300 && statusCode < 400:
+			level = zerolog.InfoLevel
+			statusEmoji = "🔄"
+		case statusCode >= 400 && statusCode < 500:
+			level = zerolog.WarnLevel
+			statusEmoji = "⚠️"
+		case statusCode >= 500:
+			level = zerolog.ErrorLevel
+			statusEmoji = "❌"
+		default:
+			level = zerolog.InfoLevel
+			statusEmoji = "❓"
+		}
+
+		levent.Str("status", statusEmoji)
 	}
 
 	l.WithLevel(level).
 		Str("method", method).
 		Str("path", path).
 		Int("status_code", statusCode).
-		Str("status", statusEmoji).
 		Str("duration", duration.Round(time.Second).String()).
 		Msg("API Request")
 }
@@ -369,5 +412,5 @@ func (l *Logger) WithContext(ctx map[string]any) *Logger {
 		event = event.Interface(k, v)
 	}
 	logger := event.Logger()
-	return &Logger{&logger}
+	return &Logger{&logger, l.useEmoji}
 }

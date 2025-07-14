@@ -46,6 +46,7 @@ func NewHttpHandlers(p HttpHandlerParams) HttpHandlerContainer {
 	return HttpHandlerContainer{
 		AuthHandler: handler.NewAuthHandler(
 			p.CreateUserUseCase,
+			p.CreatePersonUseCase,
 			p.LoginUseCase,
 			p.ChangePasswordUseCase,
 		),

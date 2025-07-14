@@ -51,6 +51,9 @@ type RequestContext interface {
 	// Abort stops the current request handling chain.
 	Abort()
 
+	// StatusCode returns the writer status code
+	StatusCode() int
+
 	// Next continues execution to the next handler in the chain.
 	Next()
 }

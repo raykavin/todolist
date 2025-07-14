@@ -12,7 +12,7 @@ import (
 
 // UpdateTodoUseCase handles updating todos
 type UpdateTodoUseCase interface {
-	Execute(ctx context.Context, userID, todoID int64, req dto.UpdateTodoRequest) (*dto.TodoResponse, error)
+	Execute(ctx context.Context, userID, todoID int64, input dto.UpdateTodoRequest) (*dto.TodoResponse, error)
 }
 
 type updateTodoUseCase struct {
@@ -35,7 +35,7 @@ func NewUpdateTodoUseCase(
 func (uc *updateTodoUseCase) Execute(
 	ctx context.Context,
 	userID, todoID int64,
-	req dto.UpdateTodoRequest,
+	input dto.UpdateTodoRequest,
 ) (*dto.TodoResponse, error) {
 	// Validate user ownership
 	if err := uc.todoService.ValidateUserOwnership(ctx, todoID, userID); err != nil {
@@ -49,8 +49,8 @@ func (uc *updateTodoUseCase) Execute(
 	}
 
 	// Update title if provided
-	if req.Title != nil {
-		title, err := vo.NewTodoTitle(*req.Title)
+	if input.Title != nil {
+		title, err := vo.NewTodoTitle(*input.Title)
 		if err != nil {
 			return nil, err
 		}
@@ -58,8 +58,8 @@ func (uc *updateTodoUseCase) Execute(
 	}
 
 	// Update description if provided
-	if req.Description != nil {
-		description, err := vo.NewTodoDescription(*req.Description)
+	if input.Description != nil {
+		description, err := vo.NewTodoDescription(*input.Description)
 		if err != nil {
 			return nil, err
 		}
@@ -67,8 +67,8 @@ func (uc *updateTodoUseCase) Execute(
 	}
 
 	// Update priority if provided
-	if req.Priority != nil {
-		priority, err := sharedvo.NewPriorityFromString(*req.Priority)
+	if input.Priority != nil {
+		priority, err := sharedvo.NewPriorityFromString(*input.Priority)
 		if err != nil {
 			return nil, err
 		}
@@ -76,15 +76,15 @@ func (uc *updateTodoUseCase) Execute(
 	}
 
 	// Update due date if provided
-	if req.DueDate != nil {
-		if err := todo.UpdateDueDate(req.DueDate); err != nil {
+	if input.DueDate != nil {
+		if err := todo.UpdateDueDate(input.DueDate); err != nil {
 			return nil, err
 		}
 	}
 
 	// Update status if provided
-	if req.Status != nil {
-		status, err := vo.NewTodoStatusFromString(*req.Status)
+	if input.Status != nil {
+		status, err := vo.NewTodoStatusFromString(*input.Status)
 		if err != nil {
 			return nil, err
 		}

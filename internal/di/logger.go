@@ -2,6 +2,7 @@ package di
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"todolist/internal/config"
 	"todolist/pkg/log"
@@ -42,10 +43,8 @@ func validateLoggerLevel(level string) error {
 	validLevels := []string{"debug", "info", "warn", "error", "fatal", "panic"}
 	level = strings.ToLower(level)
 
-	for _, validLevel := range validLevels {
-		if level == validLevel {
-			return nil
-		}
+	if slices.Contains(validLevels, level) {
+		return nil
 	}
 
 	return fmt.Errorf("invalid logger level '%s', must be one of: %v", level, validLevels)
@@ -68,6 +67,7 @@ func NewLogger(params LoggerParams) (log.ExtendedLog, error) {
 		config.TimeFormat,
 		config.ColorEnabled,
 		config.CallerEnabled,
+		false,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize smart logger: %w", err)

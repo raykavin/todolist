@@ -13,7 +13,7 @@ import (
 
 // CreateTodoUseCase handles the creation of new todos
 type CreateTodoUseCase interface {
-	Execute(ctx context.Context, userID int64, req dto.CreateTodoRequest) (*dto.TodoResponse, error)
+	Execute(ctx context.Context, userID int64, input dto.CreateTodoRequest) (*dto.TodoResponse, error)
 }
 
 type createTodoUseCase struct {
@@ -36,29 +36,29 @@ func NewCreateTodoUseCase(
 func (uc *createTodoUseCase) Execute(
 	ctx context.Context,
 	userID int64,
-	req dto.CreateTodoRequest,
+	input dto.CreateTodoRequest,
 ) (*dto.TodoResponse, error) {
 	// Create value objects
-	title, err := vo.NewTodoTitle(req.Title)
+	title, err := vo.NewTodoTitle(input.Title)
 	if err != nil {
 		return nil, err
 	}
 
-	description, err := vo.NewTodoDescription(req.Description)
+	description, err := vo.NewTodoDescription(input.Description)
 	if err != nil {
 		return nil, err
 	}
 
-	priority, err := sharedvo.NewPriorityFromString(req.Priority)
+	priority, err := sharedvo.NewPriorityFromString(input.Priority)
 	if err != nil {
 		return nil, err
 	}
 
 	// Suggest due date if not provided
-	dueDate := req.DueDate
-	if dueDate == nil && req.Priority != "low" {
+	dueDate := input.DueDate
+	if dueDate == nil && input.Priority != "low" {
 		// Get user workload for smart suggestion
-		suggestedDate, _ := uc.todoService.SuggestDueDate(ctx, req.Priority, nil)
+		suggestedDate, _ := uc.todoService.SuggestDueDate(ctx, input.Priority, nil)
 		dueDate = suggestedDate
 	}
 
@@ -76,7 +76,7 @@ func (uc *createTodoUseCase) Execute(
 	}
 
 	// Add tags
-	for _, tag := range req.Tags {
+	for _, tag := range input.Tags {
 		todo.AddTag(tag)
 	}
 

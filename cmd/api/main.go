@@ -25,7 +25,7 @@ var (
 	fxDebug     = flag.Bool("fx-debug", false, "Enable Fx dependency injection debug logs")
 )
 
-const shutdownTimeout = 25 * time.Second
+const shutdownTimeout = 5 * time.Second
 
 func main() {
 	flag.Parse()
@@ -64,12 +64,15 @@ func configureFxLogger() fxevent.Logger {
 
 // displayAppInfo prints the application banner and basic info
 func displayAppInfo(config config.ApplicationProvider) {
+	displayText := "S.O.G.E - Sistemas Operacionais, Gerenciais e Estratégicos"
+	displayText2 := fmt.Sprintf("Copyright (c) %d I R Tecnologia, Todos os direitos reservados!", time.Now().Year())
+	displayText3 := fmt.Sprintf("Version: %s", config.GetVersion())
+
 	terminal.PrintBanner(config.GetName())
 	terminal.PrintText(config.GetDescription())
-	terminal.PrintText("S.O.G.E - Sistemas Operacionais, Gerenciais e Estratégicos")
-	terminal.PrintText(fmt.Sprintf("Copyright (c) %d I R Tecnologia, Todos os direitos reservados!",
-		time.Now().Year()))
-	terminal.PrintHeader(fmt.Sprintf("Version: %s", config.GetVersion()))
+	terminal.PrintText(displayText)
+	terminal.PrintText(displayText2)
+	terminal.PrintHeader(displayText3)
 }
 
 // runApplication registers startup and shutdown hooks

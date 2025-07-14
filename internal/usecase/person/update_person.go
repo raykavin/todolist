@@ -10,7 +10,7 @@ import (
 
 // UpdatePersonUseCase handles person updates
 type UpdatePersonUseCase interface {
-	Execute(ctx context.Context, personID int64, req dto.UpdatePersonRequest) (*dto.PersonResponse, error)
+	Execute(ctx context.Context, personID int64, input dto.UpdatePersonRequest) (*dto.PersonResponse, error)
 }
 
 type updatePersonUseCase struct {
@@ -25,7 +25,7 @@ func NewUpdatePersonUseCase(personRepository repository.PersonRepository) Update
 }
 
 // Execute updates a person
-func (uc *updatePersonUseCase) Execute(ctx context.Context, personID int64, req dto.UpdatePersonRequest) (*dto.PersonResponse, error) {
+func (uc *updatePersonUseCase) Execute(ctx context.Context, personID int64, input dto.UpdatePersonRequest) (*dto.PersonResponse, error) {
 	// Get the person
 	person, err := uc.personRepository.FindByID(ctx, personID)
 	if err != nil {
@@ -33,21 +33,21 @@ func (uc *updatePersonUseCase) Execute(ctx context.Context, personID int64, req 
 	}
 
 	// Update name if provided
-	if req.Name != nil {
-		if err := person.SetName(*req.Name); err != nil {
+	if input.Name != nil {
+		if err := person.SetName(*input.Name); err != nil {
 			return nil, err
 		}
 	}
 
 	// Update email if provided
-	if req.Email != nil {
+	if input.Email != nil {
 		// Check if new email already exists
-		existingPerson, _ := uc.personRepository.FindByEmail(ctx, *req.Email)
+		existingPerson, _ := uc.personRepository.FindByEmail(ctx, *input.Email)
 		if existingPerson != nil && existingPerson.ID() != personID {
 			return nil, vo.ErrInvalidEmail
 		}
 
-		email, err := vo.NewEmail(*req.Email)
+		email, err := vo.NewEmail(*input.Email)
 		if err != nil {
 			return nil, err
 		}
@@ -55,8 +55,8 @@ func (uc *updatePersonUseCase) Execute(ctx context.Context, personID int64, req 
 	}
 
 	// Update phone if provided
-	if req.Phone != nil {
-		if err := person.SetPhone(*req.Phone); err != nil {
+	if input.Phone != nil {
+		if err := person.SetPhone(*input.Phone); err != nil {
 			return nil, err
 		}
 	}

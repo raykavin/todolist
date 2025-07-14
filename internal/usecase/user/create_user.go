@@ -13,7 +13,7 @@ import (
 
 // CreateUserUseCase handles user creation
 type CreateUserUseCase interface {
-	Execute(ctx context.Context, req dto.CreateUserRequest) (*dto.UserResponse, error)
+	Execute(ctx context.Context, personID int64, input dto.CreateUserRequest) (*dto.UserResponse, error)
 }
 
 type createUserUseCase struct {
@@ -33,9 +33,9 @@ func NewCreateUserUseCase(
 }
 
 // Execute creates a new user
-func (uc *createUserUseCase) Execute(ctx context.Context, input dto.CreateUserRequest) (*dto.UserResponse, error) {
+func (uc *createUserUseCase) Execute(ctx context.Context, personID int64, input dto.CreateUserRequest) (*dto.UserResponse, error) {
 	// Verify person exists
-	person, err := uc.personRepository.FindByID(ctx, input.PersonID)
+	person, err := uc.personRepository.FindByID(ctx, personID)
 	if err != nil {
 		return nil, entPerson.ErrPersonNotFound
 	}
@@ -50,7 +50,7 @@ func (uc *createUserUseCase) Execute(ctx context.Context, input dto.CreateUserRe
 	}
 
 	// Check if person already has a user
-	exists, err = uc.userRepository.ExistsByPersonID(ctx, input.PersonID)
+	exists, err = uc.userRepository.ExistsByPersonID(ctx, personID)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (uc *createUserUseCase) Execute(ctx context.Context, input dto.CreateUserRe
 	// Create user entity
 	user, err := entUser.NewUser(
 		time.Now().Unix(),
-		input.PersonID,
+		personID,
 		input.Username,
 		password,
 		vo.RoleUser,

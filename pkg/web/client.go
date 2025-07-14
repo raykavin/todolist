@@ -31,16 +31,16 @@ func NewRequest(
 		p = bytes.NewBuffer(nil)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, url, p)
+	input, err := http.NewRequestWithContext(ctx, method, url, p)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	for key, value := range headers {
-		req.Header.Set(key, value)
+		input.Header.Set(key, value)
 	}
 
-	res, err := client.Do(req)
+	res, err := client.Do(input)
 	if err != nil {
 		return nil, 0, err
 	}

@@ -25,7 +25,7 @@ databases:
   default:                       # Database name (if is default of the application use instead "default" key)
     dialector: postgres          # Database dialector
     dsn: |                       # Database data source name
-      host=todolist_postgres
+      host=todolist_dev_postgres
       port=5432
       user=todolist
       password=Fo0#97oXggSQ

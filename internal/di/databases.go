@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"todolist/internal/config"
+	infraDB "todolist/internal/infrastructure/database"
+	"todolist/internal/infrastructure/database/model"
 	"todolist/pkg/database"
 
 	"go.uber.org/fx"
@@ -91,6 +93,20 @@ func NewDatabases(p DatabaseParams, lc fx.Lifecycle) (DatabaseContainer, error) 
 
 	// Register lifecycle hooks
 	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) error {
+			return infraDB.Migrate(container.DefaultDatabase,
+				model.AuditLog{},
+				model.LoginAttempt{},
+				model.Person{},
+				model.Tag{},
+				model.Todo{},
+				model.TodoDailyStatistics{},
+				model.TodoTag{},
+				model.TodoView{},
+				model.User{},
+				model.UserStatisticsView{},
+			)
+		},
 		OnStop: func(ctx context.Context) error {
 			if sqlDB, err := container.DefaultDatabase.DB(); err == nil {
 				return sqlDB.Close()

@@ -12,7 +12,7 @@ import (
 
 // CreatePersonUseCase handles person creation
 type CreatePersonUseCase interface {
-	Execute(ctx context.Context, req dto.CreatePersonRequest) (*dto.PersonResponse, error)
+	Execute(ctx context.Context, input dto.CreatePersonRequest) (*dto.PersonResponse, error)
 }
 
 type createPersonUseCase struct {
@@ -27,9 +27,9 @@ func NewCreatePersonUseCase(personRepository repository.PersonRepository) Create
 }
 
 // Execute creates a new person
-func (uc *createPersonUseCase) Execute(ctx context.Context, req dto.CreatePersonRequest) (*dto.PersonResponse, error) {
+func (uc *createPersonUseCase) Execute(ctx context.Context, input dto.CreatePersonRequest) (*dto.PersonResponse, error) {
 	// Check if email already exists
-	exists, err := uc.personRepository.ExistsByEmail(ctx, req.Email)
+	exists, err := uc.personRepository.ExistsByEmail(ctx, input.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -39,13 +39,13 @@ func (uc *createPersonUseCase) Execute(ctx context.Context, req dto.CreatePerson
 	}
 
 	// Validate Tax ID
-	taxID, err := vo.NewTaxID(req.TaxID)
+	taxID, err := vo.NewTaxID(input.TaxID)
 	if err != nil {
 		return nil, err
 	}
 
 	// Create email value object
-	email, err := vo.NewEmail(req.Email)
+	email, err := vo.NewEmail(input.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +53,8 @@ func (uc *createPersonUseCase) Execute(ctx context.Context, req dto.CreatePerson
 	birthDate := (*sharedvo.Date)(nil)
 
 	// If birth date is provided, create date value object
-	if req.BirthDate != "" {
-		birthDt, err := sharedvo.NewDate(req.BirthDate)
+	if input.BirthDate != "" {
+		birthDt, err := sharedvo.NewDate(input.BirthDate)
 		if err != nil {
 			return nil, err
 		}
@@ -65,8 +65,8 @@ func (uc *createPersonUseCase) Execute(ctx context.Context, req dto.CreatePerson
 	// Create person entity
 	person, err := entity.NewPerson(
 		time.Now().Unix(),
-		req.Name,
-		req.Phone,
+		input.Name,
+		input.Phone,
 		taxID,
 		email,
 		birthDate,

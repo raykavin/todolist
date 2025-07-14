@@ -15,7 +15,7 @@ var (
 
 // ChangePasswordUseCase handles password changes
 type ChangePasswordUseCase interface {
-	Execute(ctx context.Context, userID int64, req dto.ChangePasswordRequest) error
+	Execute(ctx context.Context, userID int64, input dto.ChangePasswordRequest) error
 }
 
 type changePasswordUseCase struct {
@@ -30,7 +30,7 @@ func NewChangePasswordUseCase(userRepository repository.UserRepository) ChangePa
 }
 
 // Execute changes user password
-func (uc *changePasswordUseCase) Execute(ctx context.Context, userID int64, req dto.ChangePasswordRequest) error {
+func (uc *changePasswordUseCase) Execute(ctx context.Context, userID int64, input dto.ChangePasswordRequest) error {
 	// Get the user
 	user, err := uc.userRepository.FindByID(ctx, userID)
 	if err != nil {
@@ -38,12 +38,12 @@ func (uc *changePasswordUseCase) Execute(ctx context.Context, userID int64, req 
 	}
 
 	// Verify old password
-	if !user.Password().Matches(req.OldPassword) {
+	if !user.Password().Matches(input.OldPassword) {
 		return ErrIncorrectOldPassword
 	}
 
 	// Create new password value object
-	newPassword, err := vo.NewPassword(req.NewPassword)
+	newPassword, err := vo.NewPassword(input.NewPassword)
 	if err != nil {
 		return err
 	}

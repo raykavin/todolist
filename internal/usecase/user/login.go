@@ -18,7 +18,7 @@ var (
 
 // LoginUseCase handles user authentication
 type LoginUseCase interface {
-	Execute(ctx context.Context, req dto.AuthRequest) (*dto.AuthResponse, error)
+	Execute(ctx context.Context, input dto.AuthRequest) (*dto.AuthResponse, error)
 }
 
 type loginUseCase struct {
@@ -41,9 +41,9 @@ func NewLoginUseCase(
 }
 
 // Execute authenticates a user
-func (uc *loginUseCase) Execute(ctx context.Context, req dto.AuthRequest) (*dto.AuthResponse, error) {
+func (uc *loginUseCase) Execute(ctx context.Context, input dto.AuthRequest) (*dto.AuthResponse, error) {
 	// Find user by username
-	user, err := uc.userRepository.FindByUsername(ctx, req.Username)
+	user, err := uc.userRepository.FindByUsername(ctx, input.Username)
 	if err != nil {
 		return nil, ErrInvalidCredentials
 	}
@@ -54,7 +54,7 @@ func (uc *loginUseCase) Execute(ctx context.Context, req dto.AuthRequest) (*dto.
 	}
 
 	// Verify password
-	if !user.Password().Matches(req.Password) {
+	if !user.Password().Matches(input.Password) {
 		return nil, ErrInvalidCredentials
 	}
 

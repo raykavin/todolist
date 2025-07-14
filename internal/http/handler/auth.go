@@ -6,28 +6,33 @@ import (
 
 	"todolist/internal/adapter/http"
 	entPerson "todolist/internal/domain/person/entity"
+	"todolist/internal/domain/person/valueobject"
 	entUser "todolist/internal/domain/user/entity"
 	"todolist/internal/dto"
+	ucPerson "todolist/internal/usecase/person"
 	ucUser "todolist/internal/usecase/user"
 )
 
 // AuthHandler handles authentication-related HTTP requests
 type AuthHandler struct {
-	createUserUC     ucUser.CreateUserUseCase
-	loginUC          ucUser.LoginUseCase
-	changePasswordUC ucUser.ChangePasswordUseCase
+	createUserUseCase     ucUser.CreateUserUseCase
+	createPersonUseCase   ucPerson.CreatePersonUseCase
+	loginUseCase          ucUser.LoginUseCase
+	changePasswordUseCase ucUser.ChangePasswordUseCase
 }
 
 // NewAuthHandler creates a new auth handler
 func NewAuthHandler(
-	createUserUC ucUser.CreateUserUseCase,
-	loginUC ucUser.LoginUseCase,
-	changePasswordUC ucUser.ChangePasswordUseCase,
+	createUserUseCase ucUser.CreateUserUseCase,
+	createPersonUseCase ucPerson.CreatePersonUseCase,
+	loginUseCase ucUser.LoginUseCase,
+	changePasswordUseCase ucUser.ChangePasswordUseCase,
 ) *AuthHandler {
 	return &AuthHandler{
-		createUserUC:     createUserUC,
-		loginUC:          loginUC,
-		changePasswordUC: changePasswordUC,
+		createUserUseCase:     createUserUseCase,
+		createPersonUseCase:   createPersonUseCase,
+		loginUseCase:          loginUseCase,
+		changePasswordUseCase: changePasswordUseCase,
 	}
 }
 
@@ -52,8 +57,22 @@ func (h *AuthHandler) Register(ctx http.RequestContext) {
 		return
 	}
 
+	person, err := h.createPersonUseCase.Execute(ctx.Context(), input.Person)
+	if err != nil {
+		if errors.Is(err, valueobject.ErrInvalidEmail) {
+			ctx.JSON(netHttp.StatusConflict,
+				dto.ErrorResponse("EMAIL_EXISTS", "Email already exists", nil))
+		} else {
+			ctx.JSON(netHttp.StatusInternalServerError,
+				dto.ErrorResponse("CREATE_FAILED", "Failed to create person", nil))
+		}
+
+		ctx.Abort()
+		return
+	}
+
 	// Create user
-	user, err := h.createUserUC.Execute(ctx.Context(), input)
+	user, err := h.createUserUseCase.Execute(ctx.Context(), person.ID, input)
 	if err != nil {
 		switch {
 		case errors.Is(err, entPerson.ErrPersonNotFound):
@@ -99,7 +118,7 @@ func (h *AuthHandler) Login(ctx http.RequestContext) {
 	}
 
 	// Authenticate user
-	authResponse, err := h.loginUC.Execute(ctx.Context(), input)
+	authResponse, err := h.loginUseCase.Execute(ctx.Context(), input)
 	if err != nil {
 		switch {
 		case errors.Is(err, ucUser.ErrInvalidCredentials):
@@ -161,7 +180,7 @@ func (h *AuthHandler) ChangePassword(ctx http.RequestContext) {
 	}
 
 	// Change password
-	err = h.changePasswordUC.Execute(ctx.Context(), userID, input)
+	err = h.changePasswordUseCase.Execute(ctx.Context(), userID, input)
 	if err != nil {
 		if err.Error() == "old password is incorrect" {
 			ctx.JSON(netHttp.StatusBadRequest,

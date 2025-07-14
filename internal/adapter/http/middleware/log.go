@@ -23,7 +23,7 @@ func RequestLog(log log.ExtendedLog) gin.HandlerFunc {
 		log.API(
 			ctx.Request().Method,
 			ctx.Request().URL.Path,
-			ctx.Request().Response.StatusCode,
+			ctx.StatusCode(),
 			duration,
 		)
 	})

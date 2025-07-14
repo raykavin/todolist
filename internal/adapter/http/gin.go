@@ -77,6 +77,11 @@ func (g *GinAdapter) SetCookie(c *http.Cookie) {
 	g.Ctx.SetCookie(c.Name, c.Value, c.MaxAge, c.Path, c.Domain, c.Secure, c.HttpOnly)
 }
 
+// StatusCode implements http.RequestContext
+func (g *GinAdapter) StatusCode() int {
+	return g.Ctx.Writer.Status()
+}
+
 // Writer implements http.RequestContext.
 func (g *GinAdapter) Writer() http.ResponseWriter {
 	return g.Ctx.Writer

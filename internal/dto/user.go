@@ -2,9 +2,9 @@ package dto
 
 // CreateUserRequest represents the request to create a user
 type CreateUserRequest struct {
-	PersonID int64  `json:"person_id" validate:"required"`
-	Username string `json:"username"  validate:"required,min=3,max=50"`
-	Password string `json:"password"  validate:"required,min=8"`
+	Person   CreatePersonRequest `json:"person"   validate:"required"`
+	Username string              `json:"username" validate:"required,min=3,max=50"`
+	Password string              `json:"password" validate:"required,min=8"`
 }
 
 // ChangePasswordRequest represents the password change request

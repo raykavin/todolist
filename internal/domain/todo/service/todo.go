@@ -35,24 +35,24 @@ type ProductivityMetrics struct {
 
 // todoService implements TodoService
 type todoService struct {
-	todoRepo      repository.TodoRepository
-	todoQueryRepo repository.TodoQueryRepository
+	todoRepository      repository.TodoRepository
+	todoQueryRepository repository.TodoQueryRepository
 }
 
 // NewTodoService creates a new todo service
 func NewTodoService(
-	todoRepo repository.TodoRepository,
-	todoQueryRepo repository.TodoQueryRepository,
+	todoRepository repository.TodoRepository,
+	todoQueryRepository repository.TodoQueryRepository,
 ) TodoService {
 	return &todoService{
-		todoRepo:      todoRepo,
-		todoQueryRepo: todoQueryRepo,
+		todoRepository:      todoRepository,
+		todoQueryRepository: todoQueryRepository,
 	}
 }
 
 // ValidateUserOwnership validates if a user owns a todo
 func (s *todoService) ValidateUserOwnership(ctx context.Context, todoID, userID int64) error {
-	todo, err := s.todoRepo.FindByID(ctx, todoID)
+	todo, err := s.todoRepository.FindByID(ctx, todoID)
 	if err != nil {
 		return entity.ErrTodoNotFound
 	}
@@ -68,7 +68,7 @@ func (s *todoService) ValidateUserOwnership(ctx context.Context, todoID, userID 
 func (s *todoService) GetUserProductivity(ctx context.Context, userID int64, period time.Duration) (*ProductivityMetrics, error) {
 	// This would involve complex queries and calculations
 	// For now, returning a simplified version
-	stats, err := s.todoQueryRepo.GetStatistics(ctx, userID)
+	stats, err := s.todoQueryRepository.GetStatistics(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (s *todoService) MarkOverdueAsInProgress(ctx context.Context, userID int64)
 	}
 
 	// Find all overdue pending todos
-	overdueTodos, err := s.todoQueryRepo.FindByFilters(ctx, filter, shared.QueryOptions{Limit: 1000})
+	overdueTodos, err := s.todoQueryRepository.FindByFilters(ctx, filter, shared.QueryOptions{Limit: 1000})
 	if err != nil {
 		return 0, err
 	}
@@ -144,7 +144,7 @@ func (s *todoService) MarkOverdueAsInProgress(ctx context.Context, userID int64)
 		}
 
 		// Save the updated todo
-		if err := s.todoRepo.Save(ctx, todo); err != nil {
+		if err := s.todoRepository.Save(ctx, todo); err != nil {
 			// Skip this todo and continue with others
 			continue
 		}
@@ -168,7 +168,7 @@ func (s *todoService) AutoCancelOldPendingTodos(ctx context.Context, userID int6
 	}
 
 	// Find all old pending todos
-	oldTodos, err := s.todoQueryRepo.FindByFilters(ctx, filter, shared.QueryOptions{Limit: 1000})
+	oldTodos, err := s.todoQueryRepository.FindByFilters(ctx, filter, shared.QueryOptions{Limit: 1000})
 	if err != nil {
 		return 0, err
 	}
@@ -195,7 +195,7 @@ func (s *todoService) AutoCancelOldPendingTodos(ctx context.Context, userID int6
 		}
 
 		// Save the updated todo
-		if err := s.todoRepo.Save(ctx, todo); err != nil {
+		if err := s.todoRepository.Save(ctx, todo); err != nil {
 			// Skip this todo and continue with others
 			continue
 		}

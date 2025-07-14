@@ -42,7 +42,8 @@ func main() {
 		di.ApplicationServicesModule(),           // Services: application services
 		di.DomainServicesModule(),                // Services: domain services
 		di.UseCasesModule(),                      // UseCases: business logic
-		di.HTTPHandlersModule(),                  // HTTPHandler: HTTP server and routes
+		di.HTTPHandlersModule(),                  // HTTPHandler: HTTP handlers
+		di.HTTPServerModule(),                    // HTTPServer: HTTP server setup
 
 		// Application lifecycle hooks
 		fx.Invoke(displayAppInfo),

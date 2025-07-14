@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:14.6
-    container_name: khambalia_postgres
+    container_name: todolist_dev_postgres
     networks:
       - todolist_dev
     volumes:
@@ -9,21 +9,11 @@ services:
       - ./.docker/postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     environment:
       - TZ=America/Belem
-      - POSTGRES_USER=todolist_dev
+      - POSTGRES_USER=todolist
       - POSTGRES_PASSWORD=Fo0#97oXggSQ
-      - POSTGRES_DB=todolist_dev
+      - POSTGRES_DB=todolist
     ports:
       - "5432:5432"
-    restart: on-failure
-
-  redis:
-    image: redis:6.2.4
-    container_name: khambalia_redis
-    networks:
-      - todolist_dev
-    command: redis-server --requirepass 233#SLoboMjm17#0U9wUKQcGW
-    ports:
-      - "6379:6379"
     restart: on-failure
 
   todolist:
@@ -31,21 +21,20 @@ services:
       context: "."
       target: development
       dockerfile: "deploy/docker/Dockerfile.dev"
-    container_name: khambalia_golang
-    working_dir: /go/src/todolist_dev
+    container_name: todolist_todolist_dev
+    working_dir: /workspaces/app
     networks:
       - todolist_dev
     volumes:
       - ./.docker/go/bin:/go/bin:rw
       - ./.docker/go/pkg:/go/pkg:rw
-      - ./:/go/src/todolist_dev:rw
+      - ./:/go/src/todolist:rw
     environment:
       - TZ=America/Belem
     ports:
       - "3000:3000"
     depends_on:
       - postgres
-      - redis
     restart: on-failure
     tty: true
 

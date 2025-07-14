@@ -14,13 +14,13 @@ type ListTodosUseCase interface {
 }
 
 type listTodosUseCase struct {
-	todoQueryRepo repository.TodoQueryRepository
+	todoQueryRepository repository.TodoQueryRepository
 }
 
 // NewListTodosUseCase creates a new instance of ListTodosUseCase
-func NewListTodosUseCase(todoQueryRepo repository.TodoQueryRepository) ListTodosUseCase {
+func NewListTodosUseCase(todoQueryRepository repository.TodoQueryRepository) ListTodosUseCase {
 	return &listTodosUseCase{
-		todoQueryRepo: todoQueryRepo,
+		todoQueryRepository: todoQueryRepository,
 	}
 }
 
@@ -35,7 +35,7 @@ func (uc *listTodosUseCase) Execute(
 	filters.UserID = userID
 
 	// Get todos
-	todos, err := uc.todoQueryRepo.FindByFilters(ctx, filters, options)
+	todos, err := uc.todoQueryRepository.FindByFilters(ctx, filters, options)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (uc *listTodosUseCase) Execute(
 	countFilters := []shared.Filter{
 		{Field: "user_id", Operator: shared.FilterOperatorEqual, Value: userID},
 	}
-	totalCount, err := uc.todoQueryRepo.Count(ctx, countFilters)
+	totalCount, err := uc.todoQueryRepository.Count(ctx, countFilters)
 	if err != nil {
 		return nil, err
 	}

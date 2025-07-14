@@ -1,4 +1,4 @@
-package gin
+package web
 
 import (
 	"context"
@@ -23,8 +23,8 @@ type Engine struct {
 	addr   string
 }
 
-// New creates a new Gin engine with the specified configuration
-func New(host string, listen uint16, debugMode bool) (*Engine, error) {
+// NewGin creates a new Gin engine with the specified configuration
+func NewGin(host string, listen uint16, debugMode bool) (*Engine, error) {
 	if listen == 0 {
 		return nil, ErrInvalidListenAddress
 	}
@@ -73,4 +73,10 @@ func (e *Engine) Router() *gin.Engine {
 // Server provides access to the underlying HTTP server
 func (e *Engine) Server() *netHttp.Server {
 	return e.server
+}
+
+// SetupRoutes is a helper function to demonstrate route setup
+// You can customize this based on your needs
+func (e *Engine) SetupRoutes(routes func(router *gin.Engine)) {
+	routes(e.router)
 }

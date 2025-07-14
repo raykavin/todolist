@@ -19,7 +19,7 @@ type DatabaseParams struct {
 // DatabaseContainer groups all database implementations provided from Fx
 type DatabaseContainer struct {
 	fx.Out
-	DefaultDatabase *gorm.DB `name:"default"`
+	DefaultDatabase *gorm.DB
 }
 
 // validateDatabaseConfig validates the database configuration

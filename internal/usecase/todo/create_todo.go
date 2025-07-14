@@ -17,18 +17,18 @@ type CreateTodoUseCase interface {
 }
 
 type createTodoUseCase struct {
-	todoRepo    repository.TodoRepository
-	todoService service.TodoService
+	todoRepository repository.TodoRepository
+	todoService    service.TodoService
 }
 
 // NewCreateTodoUseCase creates a new instance of CreateTodoUseCase
 func NewCreateTodoUseCase(
-	todoRepo repository.TodoRepository,
+	todoRepository repository.TodoRepository,
 	todoService service.TodoService,
 ) CreateTodoUseCase {
 	return &createTodoUseCase{
-		todoRepo:    todoRepo,
-		todoService: todoService,
+		todoRepository: todoRepository,
+		todoService:    todoService,
 	}
 }
 
@@ -81,7 +81,7 @@ func (uc *createTodoUseCase) Execute(
 	}
 
 	// Save todo
-	if err := uc.todoRepo.Save(ctx, todo); err != nil {
+	if err := uc.todoRepository.Save(ctx, todo); err != nil {
 		return nil, err
 	}
 

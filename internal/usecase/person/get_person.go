@@ -13,19 +13,19 @@ type GetPersonUseCase interface {
 }
 
 type getPersonUseCase struct {
-	personRepo repository.PersonRepository
+	personRepository repository.PersonRepository
 }
 
 // NewGetPersonUseCase creates a new instance of GetPersonUseCase
-func NewGetPersonUseCase(personRepo repository.PersonRepository) GetPersonUseCase {
+func NewGetPersonUseCase(personRepository repository.PersonRepository) GetPersonUseCase {
 	return &getPersonUseCase{
-		personRepo: personRepo,
+		personRepository: personRepository,
 	}
 }
 
 // Execute retrieves a person by ID
 func (uc *getPersonUseCase) Execute(ctx context.Context, personID int64) (*dto.PersonResponse, error) {
-	person, err := uc.personRepo.FindByID(ctx, personID)
+	person, err := uc.personRepository.FindByID(ctx, personID)
 	if err != nil {
 		return nil, shared.ErrNotFound
 	}

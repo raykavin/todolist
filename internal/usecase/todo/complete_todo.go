@@ -14,18 +14,18 @@ type CompleteTodoUseCase interface {
 }
 
 type completeTodoUseCase struct {
-	todoRepo    repository.TodoRepository
-	todoService service.TodoService
+	todoRepository repository.TodoRepository
+	todoService    service.TodoService
 }
 
 // NewCompleteTodoUseCase creates a new instance of CompleteTodoUseCase
 func NewCompleteTodoUseCase(
-	todoRepo repository.TodoRepository,
+	todoRepository repository.TodoRepository,
 	todoService service.TodoService,
 ) CompleteTodoUseCase {
 	return &completeTodoUseCase{
-		todoRepo:    todoRepo,
-		todoService: todoService,
+		todoRepository: todoRepository,
+		todoService:    todoService,
 	}
 }
 
@@ -37,7 +37,7 @@ func (uc *completeTodoUseCase) Execute(ctx context.Context, userID, todoID int64
 	}
 
 	// Get the todo
-	todo, err := uc.todoRepo.FindByID(ctx, todoID)
+	todo, err := uc.todoRepository.FindByID(ctx, todoID)
 	if err != nil {
 		return nil, shared.ErrNotFound
 	}
@@ -48,7 +48,7 @@ func (uc *completeTodoUseCase) Execute(ctx context.Context, userID, todoID int64
 	}
 
 	// Save updated todo
-	if err := uc.todoRepo.Save(ctx, todo); err != nil {
+	if err := uc.todoRepository.Save(ctx, todo); err != nil {
 		return nil, err
 	}
 

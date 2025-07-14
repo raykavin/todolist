@@ -18,18 +18,18 @@ type SuspiciousCriteria struct {
 }
 
 type userSecurityService struct {
-	userRepo      repository.UserRepository
-	userQueryRepo repository.UserQueryRepository
+	userRepository      repository.UserRepository
+	userQueryRepository repository.UserQueryRepository
 }
 
 // NewUserSecurityService creates a new instance.
 func NewUserSecurityService(
-	userRepo repository.UserRepository,
-	userQueryRepo repository.UserQueryRepository,
+	userRepository repository.UserRepository,
+	userQueryRepository repository.UserQueryRepository,
 ) UserSecurityService {
 	return &userSecurityService{
-		userRepo:      userRepo,
-		userQueryRepo: userQueryRepo,
+		userRepository:      userRepository,
+		userQueryRepository: userQueryRepository,
 	}
 }
 
@@ -38,7 +38,7 @@ func (s *userSecurityService) ValidateUserPermission(
 	userID int64,
 	permission string,
 ) error {
-	user, err := s.userRepo.FindByID(ctx, userID)
+	user, err := s.userRepository.FindByID(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (s *userSecurityService) DeactivateInactiveUsers(
 	inactiveDays,
 	limit int,
 ) (int, error) {
-	users, err := s.userQueryRepo.FindInactiveUsers(
+	users, err := s.userQueryRepository.FindInactiveUsers(
 		ctx,
 		inactiveDays,
 		shared.QueryOptions{Limit: limit},
@@ -71,7 +71,7 @@ func (s *userSecurityService) DeactivateInactiveUsers(
 	count := 0
 	for _, user := range users {
 		user.Deactivate()
-		if err := s.userRepo.Save(ctx, user); err != nil {
+		if err := s.userRepository.Save(ctx, user); err != nil {
 			continue
 		}
 		count++
@@ -87,7 +87,7 @@ func (s *userSecurityService) BlockSuspiciousUsers(
 ) ([]int64, error) {
 	blockedUserIDs := []int64{}
 
-	users, err := s.userQueryRepo.FindByStatus(
+	users, err := s.userQueryRepository.FindByStatus(
 		ctx,
 		uservo.StatusActive,
 		shared.QueryOptions{Limit: limit},
@@ -100,7 +100,7 @@ func (s *userSecurityService) BlockSuspiciousUsers(
 		if user.FailedLoginAttempts() >= criteria.FailedLoginAttempts {
 			if time.Since(user.LastLoginAttemptAt()) <= criteria.TimeWindow {
 				user.Block()
-				if err := s.userRepo.Save(ctx, user); err != nil {
+				if err := s.userRepository.Save(ctx, user); err != nil {
 					continue
 				}
 				blockedUserIDs = append(blockedUserIDs, user.ID())

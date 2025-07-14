@@ -14,18 +14,18 @@ type GetTodoUseCase interface {
 }
 
 type getTodoUseCase struct {
-	todoRepo    repository.TodoRepository
-	todoService service.TodoService
+	todoRepository repository.TodoRepository
+	todoService    service.TodoService
 }
 
 // NewGetTodoUseCase creates a new instance of GetTodoUseCase
 func NewGetTodoUseCase(
-	todoRepo repository.TodoRepository,
+	todoRepository repository.TodoRepository,
 	todoService service.TodoService,
 ) GetTodoUseCase {
 	return &getTodoUseCase{
-		todoRepo:    todoRepo,
-		todoService: todoService,
+		todoRepository: todoRepository,
+		todoService:    todoService,
 	}
 }
 
@@ -37,7 +37,7 @@ func (uc *getTodoUseCase) Execute(ctx context.Context, userID, todoID int64) (*d
 	}
 
 	// Get the todo
-	todo, err := uc.todoRepo.FindByID(ctx, todoID)
+	todo, err := uc.todoRepository.FindByID(ctx, todoID)
 	if err != nil {
 		return nil, shared.ErrNotFound
 	}

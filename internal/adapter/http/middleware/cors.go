@@ -36,11 +36,11 @@ var (
 
 // CORS returns a Gin middleware that sets CORS headers.
 // If customCors is empty, it uses sensible defaults.
-func CORS(customCors map[string]string) gin.HandlerFunc {
+func CORS(customCors ...map[string]string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Apply custom headers if provided
 		if len(customCors) > 0 {
-			for key, value := range customCors {
+			for key, value := range customCors[0] {
 				c.Writer.Header().Set(key, value)
 			}
 		} else {

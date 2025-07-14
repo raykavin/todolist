@@ -11,7 +11,6 @@ import (
 	ucPerson "todolist/internal/usecase/person"
 	ucTodo "todolist/internal/usecase/todo"
 	ucUser "todolist/internal/usecase/user"
-	"todolist/pkg/log"
 )
 
 // UseCaseParams defines the dependencies required to create use cases
@@ -23,7 +22,6 @@ type UseCaseParams struct {
 	TodoRepository      rptTodo.TodoRepository
 	TodoQueryRepository rptTodo.TodoQueryRepository
 	TodoService         svcTodo.TodoService
-	Log                 log.Interface
 }
 
 // UseCaseContainer provides all use case implementations

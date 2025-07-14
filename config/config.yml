@@ -25,11 +25,11 @@ databases:
   todolist:                      # Default application database
     dialector: postgres
     dsn: |
-      host=khambalia_postgres
+      host=todolist_postgres
       port=5432
-      user=khambalia
+      user=todolist
       password=Fo0#97oXggSQ
       search_path=public
-      dbname=khambalia
+      dbname=todolist
       sslmode=disable
       TimeZone=America/Belem

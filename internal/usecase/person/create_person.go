@@ -16,20 +16,20 @@ type CreatePersonUseCase interface {
 }
 
 type createPersonUseCase struct {
-	personRepo repository.PersonRepository
+	personRepository repository.PersonRepository
 }
 
 // NewCreatePersonUseCase creates a new instance of CreatePersonUseCase
-func NewCreatePersonUseCase(personRepo repository.PersonRepository) CreatePersonUseCase {
+func NewCreatePersonUseCase(personRepository repository.PersonRepository) CreatePersonUseCase {
 	return &createPersonUseCase{
-		personRepo: personRepo,
+		personRepository: personRepository,
 	}
 }
 
 // Execute creates a new person
 func (uc *createPersonUseCase) Execute(ctx context.Context, req dto.CreatePersonRequest) (*dto.PersonResponse, error) {
 	// Check if email already exists
-	exists, err := uc.personRepo.ExistsByEmail(ctx, req.Email)
+	exists, err := uc.personRepository.ExistsByEmail(ctx, req.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (uc *createPersonUseCase) Execute(ctx context.Context, req dto.CreatePerson
 	}
 
 	// Save person
-	if err := uc.personRepo.Save(ctx, person); err != nil {
+	if err := uc.personRepository.Save(ctx, person); err != nil {
 		return nil, err
 	}
 

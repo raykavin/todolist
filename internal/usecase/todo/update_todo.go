@@ -16,18 +16,18 @@ type UpdateTodoUseCase interface {
 }
 
 type updateTodoUseCase struct {
-	todoRepo    repository.TodoRepository
-	todoService service.TodoService
+	todoRepository repository.TodoRepository
+	todoService    service.TodoService
 }
 
 // NewUpdateTodoUseCase creates a new instance of UpdateTodoUseCase
 func NewUpdateTodoUseCase(
-	todoRepo repository.TodoRepository,
+	todoRepository repository.TodoRepository,
 	todoService service.TodoService,
 ) UpdateTodoUseCase {
 	return &updateTodoUseCase{
-		todoRepo:    todoRepo,
-		todoService: todoService,
+		todoRepository: todoRepository,
+		todoService:    todoService,
 	}
 }
 
@@ -43,7 +43,7 @@ func (uc *updateTodoUseCase) Execute(
 	}
 
 	// Get the todo
-	todo, err := uc.todoRepo.FindByID(ctx, todoID)
+	todo, err := uc.todoRepository.FindByID(ctx, todoID)
 	if err != nil {
 		return nil, shared.ErrNotFound
 	}
@@ -94,7 +94,7 @@ func (uc *updateTodoUseCase) Execute(
 	}
 
 	// Save updated todo
-	if err := uc.todoRepo.Save(ctx, todo); err != nil {
+	if err := uc.todoRepository.Save(ctx, todo); err != nil {
 		return nil, err
 	}
 

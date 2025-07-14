@@ -12,17 +12,17 @@ type GetStatisticsUseCase interface {
 }
 
 type getStatisticsUseCase struct {
-	todoQueryRepo repository.TodoQueryRepository
+	todoQueryRepository repository.TodoQueryRepository
 }
 
 // NewGetStatisticsUseCase creates a new instance of GetStatisticsUseCase
-func NewGetStatisticsUseCase(todoQueryRepo repository.TodoQueryRepository) GetStatisticsUseCase {
+func NewGetStatisticsUseCase(todoQueryRepository repository.TodoQueryRepository) GetStatisticsUseCase {
 	return &getStatisticsUseCase{
-		todoQueryRepo: todoQueryRepo,
+		todoQueryRepository: todoQueryRepository,
 	}
 }
 
 // Execute retrieves todo statistics for a user
 func (uc *getStatisticsUseCase) Execute(ctx context.Context, userID int64) (*vo.TodoStatistics, error) {
-	return uc.todoQueryRepo.GetStatistics(ctx, userID)
+	return uc.todoQueryRepository.GetStatistics(ctx, userID)
 }

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/kataras/iris/v12/x/errors"
 	"go.uber.org/fx"
 
 	"todolist/internal/config"
@@ -87,8 +88,11 @@ func createConfigLoader(configFile string, watchConfig bool) (
 
 	// Extract config name and type from file path
 	baseName := filepath.Base(configFile)
-	opts.ConfigName = strings.TrimPrefix(baseName, ".")
-	opts.ConfigType = strings.TrimSuffix(baseName, ".")
+	ext := filepath.Ext(baseName)
+	filename := strings.TrimSuffix(baseName, ext)
+
+	opts.ConfigName = filename
+	opts.ConfigType = strings.TrimPrefix(ext, ".")
 	opts.ConfigPaths = append(opts.ConfigPaths, filepath.Dir(configFile))
 	opts.WatchConfig = watchConfig
 
@@ -97,10 +101,9 @@ func createConfigLoader(configFile string, watchConfig bool) (
 
 // getDefaultDatabase retrieves the default database configuration
 func getDefaultDatabase(cfg *config.Config) (config.DatabaseServiceProvider, error) {
-	appName := cfg.GetApplication().GetName()
-	db, err := cfg.GetDatabase(appName)
+	db, err := cfg.GetDatabase("default")
 	if err != nil {
-		return nil, fmt.Errorf("no database found for default application name: %s", appName)
+		return nil, errors.New("no database found for default application name: default")
 	}
 	return db, nil
 }

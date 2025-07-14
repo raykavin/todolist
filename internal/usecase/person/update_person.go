@@ -14,20 +14,20 @@ type UpdatePersonUseCase interface {
 }
 
 type updatePersonUseCase struct {
-	personRepo repository.PersonRepository
+	personRepository repository.PersonRepository
 }
 
 // NewUpdatePersonUseCase creates a new instance of UpdatePersonUseCase
-func NewUpdatePersonUseCase(personRepo repository.PersonRepository) UpdatePersonUseCase {
+func NewUpdatePersonUseCase(personRepository repository.PersonRepository) UpdatePersonUseCase {
 	return &updatePersonUseCase{
-		personRepo: personRepo,
+		personRepository: personRepository,
 	}
 }
 
 // Execute updates a person
 func (uc *updatePersonUseCase) Execute(ctx context.Context, personID int64, req dto.UpdatePersonRequest) (*dto.PersonResponse, error) {
 	// Get the person
-	person, err := uc.personRepo.FindByID(ctx, personID)
+	person, err := uc.personRepository.FindByID(ctx, personID)
 	if err != nil {
 		return nil, shared.ErrNotFound
 	}
@@ -42,7 +42,7 @@ func (uc *updatePersonUseCase) Execute(ctx context.Context, personID int64, req 
 	// Update email if provided
 	if req.Email != nil {
 		// Check if new email already exists
-		existingPerson, _ := uc.personRepo.FindByEmail(ctx, *req.Email)
+		existingPerson, _ := uc.personRepository.FindByEmail(ctx, *req.Email)
 		if existingPerson != nil && existingPerson.ID() != personID {
 			return nil, vo.ErrInvalidEmail
 		}
@@ -62,7 +62,7 @@ func (uc *updatePersonUseCase) Execute(ctx context.Context, personID int64, req 
 	}
 
 	// Save updated person
-	if err := uc.personRepo.Save(ctx, person); err != nil {
+	if err := uc.personRepository.Save(ctx, person); err != nil {
 		return nil, err
 	}
 

@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	personRepo "todolist/internal/domain/person/repository"
-	userRepo "todolist/internal/domain/user/repository"
+	rptPerson "todolist/internal/domain/person/repository"
+	rptUser "todolist/internal/domain/user/repository"
 	vo "todolist/internal/domain/user/valueobject"
 	"todolist/internal/dto"
 	"todolist/internal/service"
@@ -22,28 +22,28 @@ type LoginUseCase interface {
 }
 
 type loginUseCase struct {
-	userRepo        userRepo.UserRepository
-	personRepo      personRepo.PersonRepository
-	tokenService    service.TokenService
-	tokenIssuerName string
+	userRepository   rptUser.UserRepository
+	personRepository rptPerson.PersonRepository
+	tokenService     service.TokenService
+	tokenIssuerName  string
 }
 
 // NewLoginUseCase creates a new instance of LoginUseCase
 func NewLoginUseCase(
-	userRepo userRepo.UserRepository,
-	personRepo personRepo.PersonRepository,
+	userRepository rptUser.UserRepository,
+	personRepository rptPerson.PersonRepository,
 	tokenIssuerName string,
 ) LoginUseCase {
 	return &loginUseCase{
-		userRepo:   userRepo,
-		personRepo: personRepo,
+		userRepository:   userRepository,
+		personRepository: personRepository,
 	}
 }
 
 // Execute authenticates a user
 func (uc *loginUseCase) Execute(ctx context.Context, req dto.AuthRequest) (*dto.AuthResponse, error) {
 	// Find user by username
-	user, err := uc.userRepo.FindByUsername(ctx, req.Username)
+	user, err := uc.userRepository.FindByUsername(ctx, req.Username)
 	if err != nil {
 		return nil, ErrInvalidCredentials
 	}
@@ -59,7 +59,7 @@ func (uc *loginUseCase) Execute(ctx context.Context, req dto.AuthRequest) (*dto.
 	}
 
 	// Get person info
-	person, err := uc.personRepo.FindByID(ctx, user.PersonID())
+	person, err := uc.personRepository.FindByID(ctx, user.PersonID())
 	if err != nil {
 		return nil, err
 	}

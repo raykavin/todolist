@@ -19,20 +19,20 @@ type ChangePasswordUseCase interface {
 }
 
 type changePasswordUseCase struct {
-	userRepo repository.UserRepository
+	userRepository repository.UserRepository
 }
 
 // NewChangePasswordUseCase creates a new instance of ChangePasswordUseCase
-func NewChangePasswordUseCase(userRepo repository.UserRepository) ChangePasswordUseCase {
+func NewChangePasswordUseCase(userRepository repository.UserRepository) ChangePasswordUseCase {
 	return &changePasswordUseCase{
-		userRepo: userRepo,
+		userRepository: userRepository,
 	}
 }
 
 // Execute changes user password
 func (uc *changePasswordUseCase) Execute(ctx context.Context, userID int64, req dto.ChangePasswordRequest) error {
 	// Get the user
-	user, err := uc.userRepo.FindByID(ctx, userID)
+	user, err := uc.userRepository.FindByID(ctx, userID)
 	if err != nil {
 		return shared.ErrNotFound
 	}
@@ -52,5 +52,5 @@ func (uc *changePasswordUseCase) Execute(ctx context.Context, userID int64, req 
 	user.ChangePassword(newPassword)
 
 	// Save updated user
-	return uc.userRepo.Save(ctx, user)
+	return uc.userRepository.Save(ctx, user)
 }

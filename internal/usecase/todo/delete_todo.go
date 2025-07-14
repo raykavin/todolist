@@ -12,18 +12,18 @@ type DeleteTodoUseCase interface {
 }
 
 type deleteTodoUseCase struct {
-	todoRepo    repository.TodoRepository
-	todoService service.TodoService
+	todoRepository repository.TodoRepository
+	todoService    service.TodoService
 }
 
 // NewDeleteTodoUseCase creates a new instance of DeleteTodoUseCase
 func NewDeleteTodoUseCase(
-	todoRepo repository.TodoRepository,
+	todoRepository repository.TodoRepository,
 	todoService service.TodoService,
 ) DeleteTodoUseCase {
 	return &deleteTodoUseCase{
-		todoRepo:    todoRepo,
-		todoService: todoService,
+		todoRepository: todoRepository,
+		todoService:    todoService,
 	}
 }
 
@@ -35,5 +35,5 @@ func (uc *deleteTodoUseCase) Execute(ctx context.Context, userID, todoID int64) 
 	}
 
 	// Delete the todo
-	return uc.todoRepo.Delete(ctx, todoID)
+	return uc.todoRepository.Delete(ctx, todoID)
 }

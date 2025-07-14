@@ -1,5 +1,6 @@
 */kubernetes/
 */terraform/
+.docker/
 scripts/
 docs/
 test/

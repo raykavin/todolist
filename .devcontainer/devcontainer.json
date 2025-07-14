@@ -1,15 +1,12 @@
 {
     "name": "Todo List DevContainer (Golang)",
     "workspaceFolder": "/workspaces/app",
-    "build": {
-        "dockerfile": "../deploy/docker/Dockerfile.dev",
-        "context": ".."
-    },
+    "dockerComposeFile": [
+        "../docker-compose.dev.yml"
+    ],
+    "service": "todolist",
     "forwardPorts": [
         3000
-    ],
-    "runArgs": [
-        "--network=host"
     ],
     "remoteUser": "vscode",
     "postCreateCommand": "go mod tidy && git config --global --add safe.directory /workspaces/app",

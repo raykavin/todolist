@@ -22,14 +22,14 @@ application:
       Access-Control-Allow-Origin: "*"
 
 databases:
-  todolist:                      # Database name (if is default of the application use instead application name)
+  default:                       # Database name (if is default of the application use instead "default" key)
     dialector: postgres          # Database dialector
     dsn: |                       # Database data source name
-      host=khambalia_postgres
+      host=todolist_postgres
       port=5432
-      user=khambalia
+      user=todolist
       password=Fo0#97oXggSQ
       search_path=public
-      dbname=khambalia
+      dbname=todolist
       sslmode=disable
       TimeZone=America/Belem

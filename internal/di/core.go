@@ -9,10 +9,8 @@ import (
 
 	"go.uber.org/fx"
 
-	"todolist/internal/adapter/log"
 	"todolist/internal/config"
 	pkgConfig "todolist/pkg/config"
-	pkgLog "todolist/pkg/log"
 )
 
 // ConfigParams defines the dependencies to load configuration
@@ -20,12 +18,6 @@ type ConfigParams struct {
 	fx.In
 	ConfigFile  string `name:"config_file"`
 	WatchConfig bool   `name:"watch_config"`
-}
-
-// LoggerParams defines the dependencies to global logger
-type LoggerParams struct {
-	fx.In
-	Config config.ApplicationProvider
 }
 
 // ConfigContainer groups all core configurations implementations provide from Fx
@@ -111,27 +103,6 @@ func getDefaultDatabase(cfg *config.Config) (config.DatabaseServiceProvider, err
 		return nil, fmt.Errorf("no database found for default application name: %s", appName)
 	}
 	return db, nil
-}
-
-// Logger provider
-func NewLogger(params LoggerParams) (pkgLog.ExtendedLog, error) {
-	const (
-		timeFormat    = "2006-01-02 15:04:05"
-		colorEnabled  = true
-		callerEnabled = false
-	)
-
-	logger, err := pkgLog.NewSmartLog(
-		params.Config.GetLoggerLevel(),
-		timeFormat,
-		colorEnabled,
-		callerEnabled,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error initializing smart logger: %w", err)
-	}
-
-	return &log.SmartLogAdapter{Logger: logger}, nil
 }
 
 // Lifecycle hooks

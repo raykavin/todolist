@@ -36,6 +36,7 @@ func main() {
 
 		// Dependency injection modules
 		di.CoreModule(*configFile, *watchConfig), // Core: context, config, logger, wait group
+		di.LoggerModule(),                        // Logger: log infrastructure
 		di.DatabasesModule(),                     // Databases: database infrastructures
 		di.RepositoriesModule(),                  // Repositories: database repositories
 		di.ApplicationServicesModule(),           // Services: application services

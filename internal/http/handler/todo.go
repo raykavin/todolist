@@ -58,6 +58,13 @@ func NewTodoHandler(
 // @Router /api/v1/todos [post]
 func (h *TodoHandler) CreateTodo(ctx http.RequestContext) {
 	userID, err := getAuthenticatedUserID(ctx)
+	if err != nil || userID == 0 {
+		ctx.JSON(netHttp.StatusUnauthorized,
+			dto.ErrorResponse("UNAUTHENTICATED", "User is not authenticated", nil))
+
+		ctx.Abort()
+		return
+	}
 
 	var input dto.CreateTodoRequest
 

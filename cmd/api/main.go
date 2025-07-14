@@ -81,7 +81,7 @@ func runApplication(
 ) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			log.Success("PON Watcher application started")
+			log.Success("Application started")
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
@@ -96,7 +96,7 @@ func gracefulShutdown(
 	log log.ExtendedLog,
 	wg *sync.WaitGroup,
 ) error {
-	log.Info("Shutting down Todo application...")
+	log.Info("Shutting down application...")
 
 	// Cancel the main context
 	cancel()
@@ -141,7 +141,7 @@ func signalHandler(shutdowner fx.Shutdowner, log log.ExtendedLog) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
-	log.Info("PON Watcher is running. Press Ctrl+C to stop...")
+	log.Info("Application is running. Press Ctrl+C to stop...")
 	<-quit
 
 	log.Info("Shutdown signal received")

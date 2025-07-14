@@ -2,3 +2,5 @@
 .github/
 */kubernetes
 */terraform
+*.test.yml
+.golangci.yml

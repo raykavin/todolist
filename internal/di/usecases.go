@@ -1,4 +1,4 @@
-package module
+package di
 
 import (
 	"go.uber.org/fx"
@@ -73,8 +73,8 @@ func NewUseCases(p UseCaseParams) UseCaseContainer {
 	}
 }
 
-// UseCases returns the fx module with all use case dependencies
-func UseCases() fx.Option {
+// UseCasesModule returns the fx module with all use case dependencies
+func UseCasesModule() fx.Option {
 	return fx.Module("usecases",
 		fx.Provide(NewUseCases),
 	)

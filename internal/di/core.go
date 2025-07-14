@@ -1,4 +1,4 @@
-package module
+package di
 
 import (
 	"context"
@@ -15,39 +15,37 @@ import (
 	pkgLog "todolist/pkg/log"
 )
 
-// Config related types
-type (
-	ConfigParams struct {
-		fx.In
-		ConfigFile  string `name:"config_file"`
-		WatchConfig bool   `name:"watch_config"`
-	}
+// ConfigParams defines the dependencies to load configuration
+type ConfigParams struct {
+	fx.In
+	ConfigFile  string `name:"config_file"`
+	WatchConfig bool   `name:"watch_config"`
+}
 
-	ConfigContainer struct {
-		fx.Out
-		App             config.ApplicationProvider
-		DefaultDatabase config.DatabaseServiceProvider
-	}
-)
-
-// Context related types
-type (
-	ContextResult struct {
-		fx.Out
-		Context context.Context
-		Cancel  context.CancelFunc
-	}
-
-	WaitGroupResult struct {
-		fx.Out
-		WaitGroup *sync.WaitGroup
-	}
-)
-
-// Logger related types
+// LoggerParams defines the dependencies to global logger
 type LoggerParams struct {
 	fx.In
 	Config config.ApplicationProvider
+}
+
+// ConfigContainer groups all core configurations implementations provide from Fx
+type ConfigContainer struct {
+	fx.Out
+	App             config.ApplicationProvider
+	DefaultDatabase config.DatabaseServiceProvider
+}
+
+// Main application context
+type ContextResult struct {
+	fx.Out
+	Context context.Context
+	Cancel  context.CancelFunc
+}
+
+// Main application wait group
+type WaitGroupResult struct {
+	fx.Out
+	WaitGroup *sync.WaitGroup
 }
 
 // Context providers
@@ -146,8 +144,8 @@ func ContextCancelOnStop(lc fx.Lifecycle, cancel context.CancelFunc) {
 	})
 }
 
-// Core returns the fx module with all core dependencies
-func Core(configFile string, watchConfig bool) fx.Option {
+// CoreModule returns the fx module with all core dependencies
+func CoreModule(configFile string, watchConfig bool) fx.Option {
 	return fx.Module("core",
 		// Supply configuration parameters
 		fx.Supply(

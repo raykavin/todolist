@@ -16,7 +16,6 @@ type AuthHandler struct {
 	createUserUC     ucUser.CreateUserUseCase
 	loginUC          ucUser.LoginUseCase
 	changePasswordUC ucUser.ChangePasswordUseCase
-	jwtSecret        string
 }
 
 // NewAuthHandler creates a new auth handler
@@ -24,13 +23,11 @@ func NewAuthHandler(
 	createUserUC ucUser.CreateUserUseCase,
 	loginUC ucUser.LoginUseCase,
 	changePasswordUC ucUser.ChangePasswordUseCase,
-	jwtSecret string,
 ) *AuthHandler {
 	return &AuthHandler{
 		createUserUC:     createUserUC,
 		loginUC:          loginUC,
 		changePasswordUC: changePasswordUC,
-		jwtSecret:        jwtSecret,
 	}
 }
 

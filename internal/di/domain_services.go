@@ -1,4 +1,4 @@
-package module
+package di
 
 import (
 	"go.uber.org/fx"
@@ -27,8 +27,8 @@ func NewDomainServices(p DomainServiceParams) DomainServiceContainer {
 	}
 }
 
-// DomainServices returns the fx module with all service dependencies
-func DomainServices() fx.Option {
+// DomainServicesModule returns the fx module with all service dependencies
+func DomainServicesModule() fx.Option {
 	return fx.Module("domain_services",
 		fx.Provide(NewDomainServices),
 	)

@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 	"todolist/internal/config"
-	"todolist/internal/fx/module"
+	"todolist/internal/di"
 	"todolist/pkg/log"
 	"todolist/pkg/terminal"
 
@@ -35,12 +35,13 @@ func main() {
 		fx.WithLogger(configureFxLogger),
 
 		// Dependency injection modules
-		module.Core(*configFile, *watchConfig), // Core: context, config, logger, wait group
-		module.Repositories(),                  // Repositories: database repositories
-		module.ApplicationServices(),           // Services: application services
-		module.DomainServices(),                // Services: domain services
-		module.UseCases(),                      // UseCases: business logic
-		module.HTTPHandlers(),                  // HTTPHandler: HTTP server and routes
+		di.CoreModule(*configFile, *watchConfig), // Core: context, config, logger, wait group
+		di.DatabasesModule(),                     // Databases: database infrastructures
+		di.RepositoriesModule(),                  // Repositories: database repositories
+		di.ApplicationServicesModule(),           // Services: application services
+		di.DomainServicesModule(),                // Services: domain services
+		di.UseCasesModule(),                      // UseCases: business logic
+		di.HTTPHandlersModule(),                  // HTTPHandler: HTTP server and routes
 
 		// Application lifecycle hooks
 		fx.Invoke(displayAppInfo),

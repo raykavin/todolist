@@ -1,4 +1,4 @@
-package module
+package di
 
 import (
 	rptPerson "todolist/internal/domain/person/repository"
@@ -10,13 +10,13 @@ import (
 	"gorm.io/gorm"
 )
 
-// Params defines the dependencies required to create the repositories
+// RepositoryParams defines the dependencies required to create the repositories
 type RepositoryParams struct {
 	fx.In
 	DatabaseProvider *gorm.DB
 }
 
-// Repositories groups all repository implementations provided via Fx
+// Repositories groups all repository implementations provided from Fx
 type RepositoryContainer struct {
 	fx.Out
 	UserRepository        rptUser.UserRepository
@@ -34,12 +34,12 @@ func NewRepositories(p RepositoryParams) RepositoryContainer {
 		UserQueryRepository:   rptInfra.NewUserQueryRepository(p.DatabaseProvider),
 		PersonRepository:      rptInfra.NewPersonRepository(p.DatabaseProvider),
 		PersonQueryRepository: rptInfra.NewPersonQueryRepository(p.DatabaseProvider),
-		// TodoRepository: rptInfra.NewTodoRepository(p.DatabaseProvider),
-		// TodoQueryRepository: rptInfra.NewTodoQueryRepository(p.DatabaseProvider),
+		TodoRepository:        rptInfra.NewTodoRepository(p.DatabaseProvider),
+		TodoQueryRepository:   rptInfra.NewTodoQueryRepository(p.DatabaseProvider),
 	}
 }
 
-// Repositories exports the Fx module that provides all repository dependencies
-func Repositories() fx.Option {
+// RepositoriesModule exports the Fx module that provides all repository dependencies
+func RepositoriesModule() fx.Option {
 	return fx.Module("repositories", fx.Provide(NewRepositories))
 }

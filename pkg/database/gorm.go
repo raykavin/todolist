@@ -32,7 +32,7 @@ var (
 // Config holds database configuration
 type Config struct {
 	DSN             string        // Data Source Name for the database connection
-	Driver          string        // Database dialector (e.g., "postgres", "mysql", "sqlite", "sqlserver")
+	Dialector       string        // Database dialector (e.g., "postgres", "mysql", "sqlite", "sqlserver")
 	LogLevel        string        // Log level for GORM (e.g., "silent", "info", "error", "warning")
 	MaxOpenConns    int           // Maximum number of open connections to the database
 	MaxIdleConns    int           // Maximum number of connections in the idle connection pool
@@ -121,7 +121,7 @@ func NewWithConfig(cfg *Config) (*gorm.DB, error) {
 	}
 
 	// Get the GORM dialector function based on the dialector
-	dialFn, err := getDriverDialectorFunc(cfg.Driver)
+	dialFn, err := getDriverDialectorFunc(cfg.Dialector)
 	if err != nil {
 		return nil, err
 	}
@@ -163,12 +163,12 @@ func validateConfig(cfg *Config) error {
 	if cfg.DSN == "" {
 		return ErrDSNRequired
 	}
-	if cfg.Driver == "" {
+	if cfg.Dialector == "" {
 		return ErrUnsupportedDriver
 	}
 
 	// Validate if dialector is supported
-	_, err := getDriverDialectorFunc(cfg.Driver)
+	_, err := getDriverDialectorFunc(cfg.Dialector)
 	if err != nil {
 		return err
 	}
@@ -229,7 +229,7 @@ func configureConnectionPool(sqlDB *sql.DB, cfg *Config) {
 
 // setupReplicas configures read replicas
 func setupReplicas(db *gorm.DB, cfg *Config) error {
-	dialFn, err := getDriverDialectorFunc(cfg.Driver)
+	dialFn, err := getDriverDialectorFunc(cfg.Dialector)
 	if err != nil {
 		return err
 	}

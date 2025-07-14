@@ -264,7 +264,7 @@ func TestNewWithConfig(t *testing.T) {
 		{
 			name: "empty DSN",
 			cfg: &Config{
-				Driver: "sqlite",
+				Dialector: "sqlite",
 			},
 			wantError: true,
 			errorType: ErrDSNRequired,
@@ -280,8 +280,8 @@ func TestNewWithConfig(t *testing.T) {
 		{
 			name: "unsupported driver",
 			cfg: &Config{
-				DSN:    "test.db",
-				Driver: "unsupported",
+				DSN:       "test.db",
+				Dialector: "unsupported",
 			},
 			wantError: true,
 			errorType: ErrUnsupportedDriver,
@@ -290,7 +290,7 @@ func TestNewWithConfig(t *testing.T) {
 			name: "valid config",
 			cfg: &Config{
 				DSN:          ":memory:",
-				Driver:       "sqlite",
+				Dialector:    "sqlite",
 				MaxOpenConns: 10,
 				MaxIdleConns: 5,
 			},
@@ -300,7 +300,7 @@ func TestNewWithConfig(t *testing.T) {
 			name: "with custom GORM config",
 			cfg: &Config{
 				DSN:        ":memory:",
-				Driver:     "sqlite",
+				Dialector:  "sqlite",
 				GormConfig: &gorm.Config{PrepareStmt: true},
 			},
 			wantError: false,
@@ -308,10 +308,10 @@ func TestNewWithConfig(t *testing.T) {
 		{
 			name: "with custom logger",
 			cfg: &Config{
-				DSN:      ":memory:",
-				Driver:   "sqlite",
-				Logger:   &mockLogger{},
-				LogLevel: "info",
+				DSN:       ":memory:",
+				Dialector: "sqlite",
+				Logger:    &mockLogger{},
+				LogLevel:  "info",
 			},
 			wantError: false,
 		},
@@ -348,7 +348,7 @@ func TestValidateConfig(t *testing.T) {
 		{
 			name: "empty DSN",
 			cfg: &Config{
-				Driver: "sqlite",
+				Dialector: "sqlite",
 			},
 			wantError: ErrDSNRequired,
 		},
@@ -362,16 +362,16 @@ func TestValidateConfig(t *testing.T) {
 		{
 			name: "unsupported driver",
 			cfg: &Config{
-				DSN:    "test.db",
-				Driver: "unsupported",
+				DSN:       "test.db",
+				Dialector: "unsupported",
 			},
 			wantError: ErrUnsupportedDriver,
 		},
 		{
 			name: "valid config",
 			cfg: &Config{
-				DSN:    ":memory:",
-				Driver: "sqlite",
+				DSN:       ":memory:",
+				Dialector: "sqlite",
 			},
 			wantError: nil,
 		},
@@ -685,7 +685,7 @@ func TestRetryLogic(t *testing.T) {
 		// For now, we'll test with a valid connection
 		cfg := &Config{
 			DSN:           ":memory:",
-			Driver:        "sqlite",
+			Dialector:     "sqlite",
 			RetryAttempts: 2,
 			RetryDelay:    10 * time.Millisecond,
 		}
@@ -710,7 +710,7 @@ func TestSetupReplicas(t *testing.T) {
 	require.NoError(t, err)
 
 	cfg := &Config{
-		Driver: "sqlite",
+		Dialector: "sqlite",
 		Replicas: []ReplicaConfig{
 			{DSN: ":memory:"},
 		},
@@ -735,7 +735,7 @@ func TestIntegration(t *testing.T) {
 	// Create a complete configuration
 	cfg := DefaultConfig()
 	cfg.DSN = ":memory:"
-	cfg.Driver = "sqlite"
+	cfg.Dialector = "sqlite"
 	cfg.LogLevel = "info"
 
 	// Initialize database

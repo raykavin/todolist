@@ -478,7 +478,7 @@ func TestTodoService_ValidateUserOwnership(t *testing.T) {
 		todoRepo.addTodo(todo)
 
 		err := service.ValidateUserOwnership(ctx, todoID, otherUserID)
-		if err != ErrUnauthorized {
+		if err != entity.ErrUnauthorizedTodoAccess {
 			t.Errorf("Expected ErrUnauthorized, got %v", err)
 		}
 	})
@@ -486,7 +486,7 @@ func TestTodoService_ValidateUserOwnership(t *testing.T) {
 	t.Run("should return not found for non-existent todo", func(t *testing.T) {
 		nonExistentID := int64(999)
 		err := service.ValidateUserOwnership(ctx, nonExistentID, userID)
-		if err != ErrTodoNotFound {
+		if err != entity.ErrTodoNotFound {
 			t.Errorf("Expected ErrTodoNotFound, got %v", err)
 		}
 	})
@@ -495,7 +495,7 @@ func TestTodoService_ValidateUserOwnership(t *testing.T) {
 		todoRepo.setError(errors.New("database error"))
 
 		err := service.ValidateUserOwnership(ctx, todoID, userID)
-		if err != ErrTodoNotFound {
+		if err != entity.ErrTodoNotFound {
 			t.Errorf("Expected ErrTodoNotFound, got %v", err)
 		}
 

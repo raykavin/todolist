@@ -1,24 +1,37 @@
 package database
 
 /*
- * migration.go
+ * migrate_default.go
  *
- * This file defines database migration logic.
+ * This file defines default database migration.
  *
  * It should provide tools to apply, rollback, and version control schema changes
  * to keep the database structure in sync with your domain model.
  *
- * This is useful for CI/CD pipelines and collaborative development.
-*/
+ */
 
 import (
 	"fmt"
+	"todolist/internal/infrastructure/database/model"
 
 	"gorm.io/gorm"
 )
 
-// Migrate runs all database migrations
-func Migrate(db *gorm.DB, models ...any) error {
+// MigrateDefault runs all database migrations for default database
+func MigrateDefault(db *gorm.DB) error {
+	models := []any{
+		model.AuditLog{},
+		model.LoginAttempt{},
+		model.Person{},
+		model.Tag{},
+		model.Todo{},
+		model.TodoDailyStatistics{},
+		model.TodoTag{},
+		model.TodoView{},
+		model.User{},
+		model.UserStatisticsView{},
+	}
+
 	// Auto migrate all models
 	if err := db.AutoMigrate(models...); err != nil {
 		return fmt.Errorf("failed to auto migrate: %w", err)
@@ -52,7 +65,8 @@ func createIndexes(db *gorm.DB) error {
 
 		// Partial indexes for active records
 		`CREATE INDEX IF NOT EXISTS idx_users_active ON users(username) WHERE deleted_at IS NULL AND status = 'active'`,
-		`CREATE INDEX IF NOT EXISTS idx_todos_overdue ON todos(user_id, due_date) WHERE deleted_at IS NULL AND status IN ('pending', 'in_progress') AND due_date < NOW()`,
+		// Removi a condição com NOW()
+		`CREATE INDEX IF NOT EXISTS idx_todos_overdue ON todos(user_id, due_date) WHERE deleted_at IS NULL AND status IN ('pending', 'in_progress')`,
 
 		// Full-text search indexes
 		`CREATE INDEX IF NOT EXISTS idx_todos_title_fts ON todos USING gin(to_tsvector('english', title))`,
@@ -70,9 +84,15 @@ func createIndexes(db *gorm.DB) error {
 
 // createViews creates database views for optimized queries
 func createViews(db *gorm.DB) error {
+	// Drop view
+	for _, view := range []string{"todo_view", "user_statistics_view"} {
+		if err := db.Exec(fmt.Sprintf(`DROP VIEW IF EXISTS %s CASCADE`, view)).Error; err != nil {
+			return err
+		}
+	}
+
 	views := []string{
-		// Todo view with user and tag information
-		`CREATE OR REPLACE VIEW todo_view AS
+		`CREATE VIEW todo_view AS
 		SELECT
 			t.id,
 			t.user_id,
@@ -93,14 +113,13 @@ func createViews(db *gorm.DB) error {
 			t.updated_at
 		FROM todos t
 		INNER JOIN users u ON u.id = t.user_id AND u.deleted_at IS NULL
-		INNER JOIN persons p ON p.id = u.person_id AND p.deleted_at IS NULL
+		INNER JOIN people p ON p.id = u.person_id AND p.deleted_at IS NULL
 		LEFT JOIN todo_tags tt ON tt.todo_id = t.id
 		LEFT JOIN tags tag ON tag.id = tt.tag_id AND tag.deleted_at IS NULL
 		WHERE t.deleted_at IS NULL
 		GROUP BY t.id, u.username, p.name`,
 
-		// User statistics view
-		`CREATE OR REPLACE VIEW user_statistics_view AS
+		`CREATE VIEW user_statistics_view AS
 		SELECT
 			u.id as user_id,
 			u.username,
@@ -117,7 +136,7 @@ func createViews(db *gorm.DB) error {
 			END as completion_rate,
 			COALESCE(MAX(t.updated_at), u.created_at) as last_activity_at
 		FROM users u
-		INNER JOIN persons p ON p.id = u.person_id AND p.deleted_at IS NULL
+		INNER JOIN people p ON p.id = u.person_id AND p.deleted_at IS NULL
 		LEFT JOIN todos t ON t.user_id = u.id AND t.deleted_at IS NULL
 		WHERE u.deleted_at IS NULL
 		GROUP BY u.id, u.username, p.name, u.created_at`,
@@ -196,9 +215,9 @@ func createTriggers(db *gorm.DB) error {
 		$$ LANGUAGE plpgsql`,
 
 		// Trigger to prevent person deletion
-		`DROP TRIGGER IF EXISTS trigger_prevent_person_delete ON persons`,
+		`DROP TRIGGER IF EXISTS trigger_prevent_person_delete ON people`,
 		`CREATE TRIGGER trigger_prevent_person_delete
-		BEFORE DELETE ON persons
+		BEFORE DELETE ON people
 		FOR EACH ROW
 		EXECUTE FUNCTION prevent_person_delete_with_user()`,
 	}

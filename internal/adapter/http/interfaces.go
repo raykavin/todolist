@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+// Handler
+
 // RequestContext encapsulates the HTTP request/response cycle and provides
 // methods for handling HTTP operations.
 type RequestContext interface {
@@ -28,8 +30,11 @@ type RequestContext interface {
 	// JSON sends a JSON response with the specified status code.
 	JSON(statusCode int, data any)
 
+	// BindQuery parses the query into a provided struct pointer
+	BindQuery(dest any) error
+
 	// BindJSON parses the request body as JSON into the provided struct pointer.
-	BindJSON(outPtr any)
+	BindJSON(dest any) error
 
 	// GetParam returns the value of the URL parameter with the specified key.
 	GetParam(key string) string

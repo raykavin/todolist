@@ -2,16 +2,11 @@ package service
 
 import (
 	"context"
-	"errors"
 	"time"
 	"todolist/internal/domain/shared"
+	"todolist/internal/domain/todo/entity"
 	"todolist/internal/domain/todo/repository"
 	vo "todolist/internal/domain/todo/valueobject"
-)
-
-var (
-	ErrTodoNotFound = errors.New("todo not found")
-	ErrUnauthorized = errors.New("unauthorized to access this todo")
 )
 
 // TodoService provides domain services for Todo operations
@@ -59,11 +54,11 @@ func NewTodoService(
 func (s *todoService) ValidateUserOwnership(ctx context.Context, todoID, userID int64) error {
 	todo, err := s.todoRepo.FindByID(ctx, todoID)
 	if err != nil {
-		return ErrTodoNotFound
+		return entity.ErrTodoNotFound
 	}
 
 	if todo.UserID() != userID {
-		return ErrUnauthorized
+		return entity.ErrUnauthorizedTodoAccess
 	}
 
 	return nil

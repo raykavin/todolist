@@ -10,6 +10,7 @@ import (
 var (
 	ErrInvalidPersonName = errors.New("person name cannot be empty")
 	ErrInvalidPhone      = errors.New("invalid phone number")
+	ErrPersonNotFound    = errors.New("person not found")
 )
 
 // Person represents a person in the system

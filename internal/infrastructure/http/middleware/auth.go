@@ -1,11 +1,12 @@
 package middleware
 
 import (
+	"net/http"
 	"strings"
-	"todolist/internal/interfaces/http/dto"
+	"todolist/internal/dto"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // JWTConfig holds JWT configuration
@@ -22,22 +23,22 @@ type JWTClaims struct {
 }
 
 // AuthMiddleware creates an authentication middleware
-func AuthMiddleware(config JWTConfig) fiber.Handler {
-	return func(c *fiber.Ctx) error {
+func AuthMiddleware(config JWTConfig) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		// Get token from header
-		authHeader := c.Get("Authorization")
+		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			return c.Status(fiber.StatusUnauthorized).JSON(
-				dto.ErrorResponse("UNAUTHORIZED", "Missing authorization header", nil),
-			)
+			c.JSON(http.StatusUnauthorized, dto.ErrorResponse("UNAUTHORIZED", "Missing authorization header", nil))
+			c.Abort()
+			return
 		}
 
 		// Extract token
 		tokenParts := strings.Split(authHeader, " ")
 		if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
-			return c.Status(fiber.StatusUnauthorized).JSON(
-				dto.ErrorResponse("INVALID_TOKEN", "Invalid authorization format", nil),
-			)
+			c.JSON(http.StatusUnauthorized, dto.ErrorResponse("INVALID_TOKEN", "Invalid authorization format", nil))
+			c.Abort()
+			return
 		}
 
 		tokenString := tokenParts[1]
@@ -48,65 +49,54 @@ func AuthMiddleware(config JWTConfig) fiber.Handler {
 		})
 
 		if err != nil || !token.Valid {
-			return c.Status(fiber.StatusUnauthorized).JSON(
-				dto.ErrorResponse("INVALID_TOKEN", "Invalid or expired token", nil),
-			)
+			c.JSON(http.StatusUnauthorized, dto.ErrorResponse("INVALID_TOKEN", "Invalid or expired token", nil))
+			c.Abort()
+			return
 		}
 
 		// Get claims
 		claims, ok := token.Claims.(*JWTClaims)
 		if !ok {
-			return c.Status(fiber.StatusUnauthorized).JSON(
-				dto.ErrorResponse("INVALID_TOKEN", "Invalid token claims", nil),
-			)
+			c.JSON(http.StatusUnauthorized, dto.ErrorResponse("INVALID_TOKEN", "Invalid token claims", nil))
+			c.Abort()
+			return
 		}
 
 		// Store user info in context
-		c.Locals("userID", claims.UserID)
-		c.Locals("username", claims.Username)
-		c.Locals("role", claims.Role)
+		c.Set("userID", claims.UserID)
+		c.Set("username", claims.Username)
+		c.Set("role", claims.Role)
 
-		return c.Next()
+		c.Next()
 	}
 }
 
 // RequireRole creates a role-based authorization middleware
-func RequireRole(roles ...string) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		userRole, ok := c.Locals("role").(string)
+func RequireRole(roles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userRole, exists := c.Get("role")
+		if !exists {
+			c.JSON(http.StatusForbidden, dto.ErrorResponse("FORBIDDEN", "Access denied", nil))
+			c.Abort()
+			return
+		}
+
+		userRoleStr, ok := userRole.(string)
 		if !ok {
-			return c.Status(fiber.StatusForbidden).JSON(
-				dto.ErrorResponse("FORBIDDEN", "Access denied", nil),
-			)
+			c.JSON(http.StatusForbidden, dto.ErrorResponse("FORBIDDEN", "Invalid role", nil))
+			c.Abort()
+			return
 		}
 
 		// Check if user has required role
 		for _, role := range roles {
-			if userRole == role {
-				return c.Next()
+			if userRoleStr == role {
+				c.Next()
+				return
 			}
 		}
 
-		return c.Status(fiber.StatusForbidden).JSON(
-			dto.ErrorResponse("INSUFFICIENT_PERMISSIONS", "Insufficient permissions", nil),
-		)
+		c.JSON(http.StatusForbidden, dto.ErrorResponse("INSUFFICIENT_PERMISSIONS", "Insufficient permissions", nil))
+		c.Abort()
 	}
-}
-
-// GetUserID gets user ID from context
-func GetUserID(c *fiber.Ctx) string {
-	userID, _ := c.Locals("userID").(string)
-	return userID
-}
-
-// GetUsername gets username from context
-func GetUsername(c *fiber.Ctx) string {
-	username, _ := c.Locals("username").(string)
-	return username
-}
-
-// GetUserRole gets user role from context
-func GetUserRole(c *fiber.Ctx) string {
-	role, _ := c.Locals("role").(string)
-	return role
 }

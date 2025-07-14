@@ -14,6 +14,8 @@ var (
 	ErrInvalidStatusTransition = errors.New("invalid status transition")
 	ErrTodoAlreadyCompleted    = errors.New("todo is already completed")
 	ErrInvalidDueDate          = errors.New("due date cannot be in the past")
+	ErrTodoNotFound            = errors.New("todo not found")
+	ErrUnauthorizedTodoAccess  = errors.New("unauthorized to access this todo")
 )
 
 // Todo represents a todo item

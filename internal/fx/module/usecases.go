@@ -32,6 +32,7 @@ type UseCaseContainer struct {
 
 	// Person Use Cases
 	CreatePersonUseCase ucPerson.CreatePersonUseCase
+	UpdatePersonUseCase ucPerson.UpdatePersonUseCase
 	GetPersonUseCase    ucPerson.GetPersonUseCase
 
 	// User Use Cases

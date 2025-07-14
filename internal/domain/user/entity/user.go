@@ -8,9 +8,11 @@ import (
 )
 
 var (
-	ErrInvalidUsername = errors.New("invalid username")
-	ErrUserNotActive   = errors.New("user is not active")
-	ErrInvalidPersonID = errors.New("invalid person ID")
+	ErrInvalidUsername   = errors.New("invalid username")
+	ErrUserNotActive     = errors.New("user is not active")
+	ErrInvalidPersonID   = errors.New("invalid person ID")
+	ErrUsernameExists    = errors.New("username already exists")
+	ErrUserAlreadyExists = errors.New("user already exists for this person")
 )
 
 // User represents a system user

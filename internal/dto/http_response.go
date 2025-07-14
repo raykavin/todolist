@@ -2,22 +2,22 @@ package dto
 
 // Response is the base response structure
 type Response struct {
-	Success bool       `json:"success"                 example:"true"`
-	Message string     `json:"message,omitempty"       example:"Operation successful"`
+	Success bool       `json:"success"           example:"true"`
+	Message string     `json:"message,omitempty" example:"Operation successful"`
 	Data    any        `json:"data,omitempty"`
 	Error   *ErrorInfo `json:"error,omitempty"`
 }
 
 // ErrorInfo contains error details
 type ErrorInfo struct {
-	Code    string         `json:"code"              example:"VALIDATION_ERROR"`
-	Message string         `json:"message"           example:"Invalid input data"`
+	Code    string         `json:"code"               example:"VALIDATION_ERROR"`
+	Message string         `json:"message"            example:"Invalid input data"`
 	Details map[string]any `json:"details,omitempty"`
 }
 
 // PaginatedResponse is the paginated response structure
 type PaginatedResponse struct {
-	Success    bool       `json:"success"    example:"true"`
+	Success    bool       `json:"success" example:"true"`
 	Data       any        `json:"data"`
 	Pagination Pagination `json:"pagination"`
 }

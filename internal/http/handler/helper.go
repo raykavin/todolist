@@ -35,8 +35,8 @@ func getAuthenticatedUserID(ctx http.RequestContext) (int64, error) {
 }
 
 // parseError parses gin binding errors into a map
-func parseError(err error) map[string]interface{} {
-	errors := make(map[string]interface{})
+func parseError(err error) map[string]any {
+	errors := make(map[string]any)
 
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {
 		for _, e := range validationErrors {

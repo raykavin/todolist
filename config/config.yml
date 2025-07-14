@@ -1,0 +1,35 @@
+application:
+  name: Todo List                                      # Application name
+  description: A simple Todo List application example  # Application descriptions
+  version: 1.0.0                                       # Application version
+  logger_level: error                                  # Default application logger level
+
+  web:
+    listen: 3000                                      # Server port
+    use_ssl: true                                     # SSL enabled flag
+    crt: /todolist/ssl/mba/mba.crt                    # SSL certificate path
+    key: /todolist/ssl/mba/mba.key                    # SSL key path
+    max_payload_size: 2147483648                      # Max payload size (2GB)
+    write_timeout: 20s                                # Write timeout
+    read_timeout: 20s                                 # Read timeout
+    idle_timeout: 60s                                 # Idle connection timeout
+    no_router: https://fibralink.net.br               # No router URL
+    cors:                                             # CORS configuration
+      Access-Control-Allow-Credentials: false
+      Access-Control-Allow-Headers: "Content-Type, Content-Length, Accept-Encoding, Authorization, Origin"
+      Access-Control-Expose-Headers: "Authorization, Content-Disposition"
+      Access-Control-Allow-Method: "POST, OPTIONS, GET, PATCH, PUT, DELETE"
+      Access-Control-Allow-Origin: "*"
+
+databases:
+  todolist:                      # Default application database
+    dialector: postgres
+    dsn: |
+      host=khambalia_postgres
+      port=5432
+      user=khambalia
+      password=Fo0#97oXggSQ
+      search_path=public
+      dbname=khambalia
+      sslmode=disable
+      TimeZone=America/Belem

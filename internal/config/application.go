@@ -34,3 +34,4 @@ func (a application) GetLoggerLevel() string { return a.LoggerLevel }
 
 // GetWeb returns the web server configuration of the application.
 func (a application) GetWeb() WebConfigProvider { return a.Web }
+ 

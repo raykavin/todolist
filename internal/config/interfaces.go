@@ -43,12 +43,15 @@ type ApplicationProvider interface {
 // WebConfigProvider defines the configuration for the web server
 type WebConfigProvider interface {
 	GetListen() uint16              // Port to listen on
-	GetReadTimeout() time.Duration  // Duration for reading request
-	GetWriteTimeout() time.Duration // Duration for writing response
-	GetSSLCert() string             // Path to SSL certificate file
-	GetSSLKey() string              // Path to SSL key file
-	GetNoRouteTo() string           // Custom 404 page path
-	GetCORS() map[string]string     // CORS headers
+	GetReadTimeout() time.Duration  // Duration for reading the entire request
+	GetWriteTimeout() time.Duration // Duration for writing the response
+	GetIdleTimeout() time.Duration  // Duration to keep idle connections open
+	GetUseSSL() bool                // Flag indicating whether SSL is enabled
+	GetSSLCert() string             // Path to the SSL certificate file
+	GetSSLKey() string              // Path to the SSL key file
+	GetMaxPayloadSize() int64       // Maximum allowed payload size in bytes
+	GetNoRouteTo() string           // URL to redirect when no route matches (404)
+	GetCORS() map[string]string     // CORS headers configuration
 }
 
 // DatabaseServiceProvider defines the interface for a database service

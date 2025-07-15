@@ -24,7 +24,7 @@ type ConfigParams struct {
 // ConfigContainer groups all core configurations implementations provide from Fx
 type ConfigContainer struct {
 	fx.Out
-	App             config.ApplicationProvider
+	AppConfig       config.ApplicationProvider
 	DefaultDatabase config.DatabaseServiceProvider
 }
 
@@ -74,7 +74,7 @@ func NewConfig(params ConfigParams) (ConfigContainer, error) {
 	}
 
 	return ConfigContainer{
-		App:             cfg.GetApplication(),
+		AppConfig:       cfg.GetApplication(),
 		DefaultDatabase: defaultDB,
 	}, nil
 }

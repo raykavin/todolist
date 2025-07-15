@@ -2,6 +2,7 @@ package di
 
 import (
 	"todolist/internal/adapter/delivery/http/handler"
+	"todolist/internal/config"
 	ucPerson "todolist/internal/usecase/person"
 	ucTodo "todolist/internal/usecase/todo"
 	ucUser "todolist/internal/usecase/user"
@@ -12,6 +13,8 @@ import (
 // HttpHandlerParams defines the dependencies required to create the http handlers
 type HttpHandlerParams struct {
 	fx.In
+	// Application configuration
+	AppConfig config.ApplicationProvider
 
 	// Person Use Cases
 	CreatePersonUseCase ucPerson.CreatePersonUseCase
@@ -39,6 +42,7 @@ type HttpHandlerContainer struct {
 	AuthHandler   *handler.AuthHandler
 	PersonHandler *handler.PersonHandler
 	TodoHandler   *handler.TodoHandler
+	HealthHandler *handler.HealthHandler
 }
 
 // NewHttpHandlers creates all http handlers implementations
@@ -64,7 +68,7 @@ func NewHttpHandlers(p HttpHandlerParams) HttpHandlerContainer {
 			p.ListTodoUseCase,
 			p.GetStatisticsUseCase,
 		),
-	}
+		HealthHandler: handler.NewHealthHandler(p.AppConfig)}
 }
 
 // HTTPHandlersModule exports the Fx module that provides all http handlers dependencies

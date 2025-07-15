@@ -149,7 +149,7 @@ func (h *AuthHandler) Login(ctx http.RequestContext) {
 // @Failure 400 {object} dto.Response
 // @Failure 401 {object} dto.Response
 // @Security BearerAuth
-// @Router /api/v1/users/password [put]
+// @Router /api/v1/auth/change-password [put]
 func (h *AuthHandler) ChangePassword(ctx http.RequestContext) {
 	userID, err := getAuthenticatedUserID(ctx)
 	if err != nil || userID == 0 {

@@ -291,6 +291,38 @@ info:
   title: Todo List API
   version: "1.0"
 paths:
+  /api/v1/auth/change-password:
+    put:
+      consumes:
+      - application/json
+      description: Change user password
+      parameters:
+      - description: Password change data
+        in: body
+        name: passwords
+        required: true
+        schema:
+          $ref: '#/definitions/todolist_internal_dto.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/todolist_internal_dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/todolist_internal_dto.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/todolist_internal_dto.Response'
+      security:
+      - BearerAuth: []
+      summary: Change password
+      tags:
+      - auth
   /api/v1/auth/login:
     post:
       consumes:
@@ -736,36 +768,18 @@ paths:
       summary: Get todo statistics
       tags:
       - todos
-  /api/v1/users/password:
-    put:
-      consumes:
-      - application/json
-      description: Change user password
-      parameters:
-      - description: Password change data
-        in: body
-        name: passwords
-        required: true
-        schema:
-          $ref: '#/definitions/todolist_internal_dto.ChangePasswordRequest'
+  /health:
+    get:
+      description: Returns the status of the application
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/todolist_internal_dto.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/todolist_internal_dto.Response'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/todolist_internal_dto.Response'
-      security:
-      - BearerAuth: []
-      summary: Change password
+            additionalProperties: true
+            type: object
+      summary: Health check
       tags:
-      - auth
+      - Health
 swagger: "2.0"

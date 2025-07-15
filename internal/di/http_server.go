@@ -34,6 +34,7 @@ type HTTPServerParams struct {
 	AuthHandler   *handler.AuthHandler
 	PersonHandler *handler.PersonHandler
 	TodoHandler   *handler.TodoHandler
+	HealthHandler *handler.HealthHandler
 	TokenService  service.TokenService
 	Log           log.ExtendedLog
 	AppConfig     config.ApplicationProvider
@@ -95,13 +96,7 @@ func registerMiddleware(router *gin.Engine, webConfig config.WebConfigProvider, 
 
 // registerRoutes defines all HTTP routes for the API
 func registerRoutes(router *gin.Engine, params HTTPServerParams) {
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"status":  "ok",
-			"app":     params.AppConfig.GetName(),
-			"version": params.AppConfig.GetVersion(),
-		})
-	})
+	authMiddleware := middleware.AuthMiddleware(params.TokenService)
 
 	router.GET("/", func(c *gin.Context) {
 		c.Redirect(302, "/swagger/index.html")
@@ -109,19 +104,19 @@ func registerRoutes(router *gin.Engine, params HTTPServerParams) {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	router.GET("/health", adptHttp.WrapHandler(params.HealthHandler.HealthCheck))
+
 	v1 := router.Group("/api/v1")
 	{
 		auth := v1.Group("/auth")
 		auth.POST("/register", adptHttp.WrapHandler(params.AuthHandler.Register))
 		auth.POST("/login", adptHttp.WrapHandler(params.AuthHandler.Login))
+		auth.PUT("/change-password", authMiddleware, adptHttp.WrapHandler(params.AuthHandler.ChangePassword))
 
 		// Rotas protegidas
 		protected := v1.Group("")
-		protected.Use(middleware.AuthMiddleware(params.TokenService))
+		protected.Use(authMiddleware)
 
-		users := protected.Group("/users")
-		users.PUT("/password", adptHttp.WrapHandler(params.AuthHandler.ChangePassword))
- 
 		people := protected.Group("/people")
 		people.POST("", adptHttp.WrapHandler(params.PersonHandler.CreatePerson))
 		people.GET("/:id", adptHttp.WrapHandler(params.PersonHandler.GetPerson))

@@ -1,0 +1,189 @@
+---
+config:
+  layout: fixed
+---
+flowchart TB
+ subgraph subGraph0["External Layer"]
+        Client["Cliente HTTP"]
+        DB[("Database")]
+        Redis[("Redis Cache")]
+        S3["S3 Storage"]
+        Kafka["Kafka"]
+        Email["Email Service"]
+  end
+ subgraph subGraph1["API Layer - cmd/"]
+        API["api/main.go"]
+        Worker["worker/main.go"]
+        Migration["migration/main.go"]
+  end
+ subgraph Handlers["Handlers"]
+        AuthHandler["auth.go"]
+        PersonHandler["person.go"]
+        TodoHandler["todo.go"]
+        HealthHandler["health.go"]
+  end
+ subgraph Middleware["Middleware"]
+        AuthMW["auth.go"]
+        CORS["cors.go"]
+        RateLimit["rate_limit.go"]
+        OIDC["oidc.go"]
+  end
+ subgraph Presenters["Presenters"]
+        LoginPres["login.go"]
+        PersonPres["person.go"]
+        TodoPres["todo.go"]
+  end
+ subgraph subGraph5["Delivery Layer - internal/adapter/delivery/http/"]
+        Gin["Gin Router"]
+        Handlers
+        Middleware
+        Presenters
+  end
+ subgraph subGraph6["Person Use Cases"]
+        CreatePerson["create_person.go"]
+        GetPerson["get_person.go"]
+        UpdatePerson["update_person.go"]
+  end
+ subgraph subGraph7["Todo Use Cases"]
+        CreateTodo["create_todo.go"]
+        GetTodo["get_todo.go"]
+        UpdateTodo["update_todo.go"]
+        CompleteTodo["complete_todo.go"]
+        DeleteTodo["delete_todo.go"]
+        GetStats["get_statistics.go"]
+  end
+ subgraph subGraph8["User Use Cases"]
+        CreateUser["create_user.go"]
+        Login["login.go"]
+        ChangePassword["change_password.go"]
+  end
+ subgraph subGraph9["Application Layer - internal/usecase/"]
+        subGraph6
+        subGraph7
+        subGraph8
+  end
+ subgraph subGraph10["Person Domain"]
+        PersonEntity["entity/person.go"]
+        PersonRepo["repository/person.go"]
+        PersonVO["valueobject/<br>email.go, tax_id.go"]
+  end
+ subgraph subGraph11["Todo Domain"]
+        TodoEntity["entity/todo.go"]
+        TodoRepo["repository/repository.go"]
+        TodoService["service/todo.go"]
+        TodoVO["valueobject/<br>status, title, description"]
+  end
+ subgraph subGraph12["User Domain"]
+        UserEntity["entity/user.go"]
+        UserRepo["repository/user.go"]
+        UserVO["valueobject/<br>password, role, status"]
+  end
+ subgraph subGraph13["Shared Domain"]
+        SharedEntity["entity.go"]
+        SharedRepo["repository.go"]
+        SharedVO["valueobject/<br>date.go, priority.go"]
+  end
+ subgraph subGraph14["Domain Layer - internal/domain/"]
+        subGraph10
+        subGraph11
+        subGraph12
+        subGraph13
+  end
+ subgraph Database["Database"]
+        GormDB["database/gorm.go"]
+        Models["model/*.go"]
+        Repos["repository/*.go"]
+        Mappers["mapper/*.go"]
+  end
+ subgraph subGraph16["External Services"]
+        JWT["auth/jwt_token_adapter.go"]
+        OAuth["auth/oauth2.go"]
+        OIDCInfra["auth/oidc.go"]
+        EmailInfra["email/email.go"]
+        Push["push/firebase.go"]
+  end
+ subgraph Cache["Cache"]
+        MemCache["cache/memory.go"]
+        RedisCache["cache/redis.go"]
+        DistCache["cache/distributed.go"]
+  end
+ subgraph Storage["Storage"]
+        LocalStorage["storage/local.go"]
+        S3Storage["storage/s3.go"]
+        GCSStorage["storage/gcs.go"]
+  end
+ subgraph Messaging["Messaging"]
+        KafkaMsg["messaging/kafka.go"]
+        RabbitMQ["messaging/rabbitmq.go"]
+        SQS["messaging/sqs.go"]
+  end
+ subgraph subGraph20["Infrastructure Layer - internal/infrastructure/"]
+        Database
+        subGraph16
+        Cache
+        Storage
+        Messaging
+  end
+ subgraph subGraph21["Application Services - internal/service/"]
+        TokenService["token_service.go"]
+        UserSecurity["user_security.go"]
+  end
+ subgraph subGraph22["Configuration - internal/config/"]
+        AppConfig["application.go"]
+        DBConfig["database.go"]
+        WebConfig["web.go"]
+        CacheConfig["cache.go"]
+        JWTConfig["jwt.go"]
+  end
+ subgraph subGraph23["Dependency Injection - internal/di/"]
+        DICore["core.go"]
+        DIHandlers["handlers.go"]
+        DIUseCases["usecases.go"]
+        DIRepos["repositories.go"]
+        DIServices["domain_services.go"]
+  end
+    Client --> API
+    API --> Gin
+    Worker --> KafkaMsg
+    Migration --> GormDB
+    Gin --> AuthMW
+    AuthMW --> Handlers
+    Handlers --> Presenters
+    AuthHandler --> Login
+    PersonHandler --> CreatePerson & GetPerson & UpdatePerson
+    TodoHandler --> CreateTodo & GetTodo & UpdateTodo & CompleteTodo
+    CreatePerson --> PersonService["PersonService"]
+    GetPerson --> PersonService
+    UpdatePerson --> PersonService
+    CreateTodo --> TodoService
+    GetTodo --> TodoService
+    UpdateTodo --> TodoService
+    CompleteTodo --> TodoService
+    Login --> UserSecurity
+    CreateUser --> UserSecurity
+    ChangePassword --> UserSecurity
+    PersonService --> PersonEntity & PersonRepo
+    TodoService --> TodoEntity & TodoRepo
+    UserSecurity --> UserEntity & UserRepo & TokenService
+    PersonRepo --> Repos
+    TodoRepo --> Repos
+    UserRepo --> Repos
+    Repos --> GormDB
+    GormDB --> DB
+    TokenService --> JWT
+    RedisCache --> Redis
+    S3Storage --> S3
+    KafkaMsg --> Kafka
+    EmailInfra --> Email
+    DICore --> AppConfig & DIHandlers & DIUseCases & DIRepos & DIServices
+    Domain["Domain"]
+    Application["Application"]
+    Infrastructure["Infrastructure"]
+    Delivery["Delivery"]
+    External["External"]
+    style API Layer fill:#fff3e0
+    style Domain Layer fill:#e1f5fe
+    style Application Layer fill:#f3e5f5
+    style Infrastructure Layer fill:#fce4ec
+    style Delivery Layer fill:#e8f5e9
+    style External Layer fill:#f5f5f5

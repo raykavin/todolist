@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2024-01-01T00:00:00.000Z" agent="5.0" version="21.0.0" etag="1" type="device">
+  <diagram name="Go Architecture" id="architecture">
+    <mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- External Layer -->
+        <mxCell id="ext-layer" value="External Layer" style="swimlane;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="1920" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="client" value="Cliente HTTP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="ext-layer">
+          <mxGeometry x="20" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="database" value="Database" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="ext-layer">
+          <mxGeometry x="180" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="redis" value="Redis Cache" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="ext-layer">
+          <mxGeometry x="340" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" value="S3 Storage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="ext-layer">
+          <mxGeometry x="500" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kafka" value="Kafka" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="ext-layer">
+          <mxGeometry x="660" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="email" value="Email Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="ext-layer">
+          <mxGeometry x="820" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- API Layer -->
+        <mxCell id="api-layer" value="API Layer (cmd/)" style="swimlane;fillColor=#fff3e0;strokeColor=#d6b656;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="220" width="1920" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="api-main" value="api/main.go" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe0b2;strokeColor=#d6b656;" vertex="1" parent="api-layer">
+          <mxGeometry x="20" y="30" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="worker-main" value="worker/main.go" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe0b2;strokeColor=#d6b656;" vertex="1" parent="api-layer">
+          <mxGeometry x="180" y="30" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="migration-main" value="migration/main.go" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe0b2;strokeColor=#d6b656;" vertex="1" parent="api-layer">
+          <mxGeometry x="340" y="30" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Delivery Layer -->
+        <mxCell id="delivery-layer" value="Delivery Layer (internal/adapter/delivery/http/)" style="swimlane;fillColor=#e8f5e9;strokeColor=#82b366;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="380" width="1920" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="gin-router" value="Gin Router" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#82b366;" vertex="1" parent="delivery-layer">
+          <mxGeometry x="20" y="70" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Handlers Group -->
+        <mxCell id="handlers-group" value="Handlers" style="swimlane;fillColor=#a5d6a7;strokeColor=#82b366;" vertex="1" parent="delivery-layer">
+          <mxGeometry x="180" y="30" width="480" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-handler" value="auth.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81c784;strokeColor=#82b366;" vertex="1" parent="handlers-group">
+          <mxGeometry x="10" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="person-handler" value="person.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81c784;strokeColor=#82b366;" vertex="1" parent="handlers-group">
+          <mxGeometry x="120" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="todo-handler" value="todo.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81c784;strokeColor=#82b366;" vertex="1" parent="handlers-group">
+          <mxGeometry x="230" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="health-handler" value="health.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81c784;strokeColor=#82b366;" vertex="1" parent="handlers-group">
+          <mxGeometry x="340" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Middleware Group -->
+        <mxCell id="middleware-group" value="Middleware" style="swimlane;fillColor=#a5d6a7;strokeColor=#82b366;" vertex="1" parent="delivery-layer">
+          <mxGeometry x="700" y="30" width="480" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-mw" value="auth.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81c784;strokeColor=#82b366;" vertex="1" parent="middleware-group">
+          <mxGeometry x="10" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="cors-mw" value="cors.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81c784;strokeColor=#82b366;" vertex="1" parent="middleware-group">
+          <mxGeometry x="120" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="rate-limit" value="rate_limit.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81c784;strokeColor=#82b366;" vertex="1" parent="middleware-group">
+          <mxGeometry x="230" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="oidc-mw" value="oidc.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81c784;strokeColor=#82b366;" vertex="1" parent="middleware-group">
+          <mxGeometry x="340" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Application Layer -->
+        <mxCell id="app-layer" value="Application Layer (internal/usecase/)" style="swimlane;fillColor=#f3e5f5;strokeColor=#9c27b0;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="620" width="1920" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- Person Use Cases -->
+        <mxCell id="person-uc-group" value="Person Use Cases" style="swimlane;fillColor=#e1bee7;strokeColor=#9c27b0;" vertex="1" parent="app-layer">
+          <mxGeometry x="20" y="30" width="400" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="create-person" value="create_person.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ce93d8;strokeColor=#9c27b0;" vertex="1" parent="person-uc-group">
+          <mxGeometry x="10" y="30" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="get-person" value="get_person.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ce93d8;strokeColor=#9c27b0;" vertex="1" parent="person-uc-group">
+          <mxGeometry x="130" y="30" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="update-person" value="update_person.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ce93d8;strokeColor=#9c27b0;" vertex="1" parent="person-uc-group">
+          <mxGeometry x="250" y="30" width="110" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Todo Use Cases -->
+        <mxCell id="todo-uc-group" value="Todo Use Cases" style="swimlane;fillColor=#e1bee7;strokeColor=#9c27b0;" vertex="1" parent="app-layer">
+          <mxGeometry x="460" y="30" width="600" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="create-todo" value="create_todo.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ce93d8;strokeColor=#9c27b0;" vertex="1" parent="todo-uc-group">
+          <mxGeometry x="10" y="30" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="get-todo" value="get_todo.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ce93d8;strokeColor=#9c27b0;" vertex="1" parent="todo-uc-group">
+          <mxGeometry x="110" y="30" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="update-todo" value="update_todo.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ce93d8;strokeColor=#9c27b0;" vertex="1" parent="todo-uc-group">
+          <mxGeometry x="210" y="30" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="complete-todo" value="complete_todo.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ce93d8;strokeColor=#9c27b0;" vertex="1" parent="todo-uc-group">
+          <mxGeometry x="310" y="30" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="delete-todo" value="delete_todo.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ce93d8;strokeColor=#9c27b0;" vertex="1" parent="todo-uc-group">
+          <mxGeometry x="410" y="30" width="90" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Domain Layer -->
+        <mxCell id="domain-layer" value="Domain Layer (internal/domain/)" style="swimlane;fillColor=#e1f5fe;strokeColor=#0288d1;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="860" width="1920" height="300" as="geometry" />
+        </mxCell>
+
+        <!-- Person Domain -->
+        <mxCell id="person-domain" value="Person Domain" style="swimlane;fillColor=#b3e5fc;strokeColor=#0288d1;" vertex="1" parent="domain-layer">
+          <mxGeometry x="20" y="30" width="400" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="person-entity" value="entity/person.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81d4fa;strokeColor=#0288d1;" vertex="1" parent="person-domain">
+          <mxGeometry x="10" y="30" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="person-repo" value="repository/person.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81d4fa;strokeColor=#0288d1;" vertex="1" parent="person-domain">
+          <mxGeometry x="140" y="30" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="person-vo" value="valueobject/&lt;br&gt;email.go&lt;br&gt;tax_id.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81d4fa;strokeColor=#0288d1;" vertex="1" parent="person-domain">
+          <mxGeometry x="270" y="30" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Todo Domain -->
+        <mxCell id="todo-domain" value="Todo Domain" style="swimlane;fillColor=#b3e5fc;strokeColor=#0288d1;" vertex="1" parent="domain-layer">
+          <mxGeometry x="460" y="30" width="600" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="todo-entity" value="entity/todo.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81d4fa;strokeColor=#0288d1;" vertex="1" parent="todo-domain">
+          <mxGeometry x="10" y="30" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="todo-repo" value="repository/repository.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81d4fa;strokeColor=#0288d1;" vertex="1" parent="todo-domain">
+          <mxGeometry x="140" y="30" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="todo-service" value="service/todo.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81d4fa;strokeColor=#0288d1;" vertex="1" parent="todo-domain">
+          <mxGeometry x="270" y="30" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="todo-vo" value="valueobject/&lt;br&gt;status, title&lt;br&gt;description&lt;br&gt;statistics" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81d4fa;strokeColor=#0288d1;" vertex="1" parent="todo-domain">
+          <mxGeometry x="400" y="30" width="120" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Infrastructure Layer -->
+        <mxCell id="infra-layer" value="Infrastructure Layer (internal/infrastructure/)" style="swimlane;fillColor=#fce4ec;strokeColor=#c2185b;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1200" width="1920" height="300" as="geometry" />
+        </mxCell>
+
+        <!-- Database Infrastructure -->
+        <mxCell id="db-infra" value="Database" style="swimlane;fillColor=#f8bbd0;strokeColor=#c2185b;" vertex="1" parent="infra-layer">
+          <mxGeometry x="20" y="30" width="300" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="gorm-db" value="gorm.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f48fb1;strokeColor=#c2185b;" vertex="1" parent="db-infra">
+          <mxGeometry x="10" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="models" value="model/*.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f48fb1;strokeColor=#c2185b;" vertex="1" parent="db-infra">
+          <mxGeometry x="120" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="repos" value="repository/*.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f48fb1;strokeColor=#c2185b;" vertex="1" parent="db-infra">
+          <mxGeometry x="10" y="80" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="mappers" value="mapper/*.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f48fb1;strokeColor=#c2185b;" vertex="1" parent="db-infra">
+          <mxGeometry x="120" y="80" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- External Services -->
+        <mxCell id="ext-services" value="External Services" style="swimlane;fillColor=#f8bbd0;strokeColor=#c2185b;" vertex="1" parent="infra-layer">
+          <mxGeometry x="360" y="30" width="400" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="jwt-adapter" value="auth/jwt_token_adapter.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f48fb1;strokeColor=#c2185b;" vertex="1" parent="ext-services">
+          <mxGeometry x="10" y="30" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="oauth" value="auth/oauth2.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f48fb1;strokeColor=#c2185b;" vertex="1" parent="ext-services">
+          <mxGeometry x="170" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="email-infra" value="email/email.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f48fb1;strokeColor=#c2185b;" vertex="1" parent="ext-services">
+          <mxGeometry x="10" y="80" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="push-infra" value="push/firebase.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f48fb1;strokeColor=#c2185b;" vertex="1" parent="ext-services">
+          <mxGeometry x="120" y="80" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Cache Infrastructure -->
+        <mxCell id="cache-infra" value="Cache" style="swimlane;fillColor=#f8bbd0;strokeColor=#c2185b;" vertex="1" parent="infra-layer">
+          <mxGeometry x="800" y="30" width="300" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="mem-cache" value="memory.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f48fb1;strokeColor=#c2185b;" vertex="1" parent="cache-infra">
+          <mxGeometry x="10" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="redis-cache" value="redis.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f48fb1;strokeColor=#c2185b;" vertex="1" parent="cache-infra">
+          <mxGeometry x="120" y="30" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="dist-cache" value="distributed.go" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f48fb1;strokeColor=#c2185b;" vertex="1" parent="cache-infra">
+          <mxGeometry x="10" y="80" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows/Connections -->
+        <mxCell id="arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" parent="1" source="client" target="api-main">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" parent="1" source="api-main" target="gin-router">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" parent="1" source="gin-router" target="auth-handler">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" parent="1" source="auth-handler" target="create-person">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" parent="1" source="create-person" target="person-entity">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" parent="1" source="person-repo" target="repos">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" parent="1" source="gorm-db" target="database">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

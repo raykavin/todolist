@@ -444,9 +444,7 @@ docker run -p 8080:8080 todo-app:latest
 ## 🔒 Security Features
 
 - JWT-based authentication
-- OIDC/OAuth2 support
 - Password hashing with bcrypt
-- Rate limiting middleware
 - CORS configuration
 - SQL injection protection via ORM
 - Input validation

@@ -1,25 +1,25 @@
 application:
   name: Todo List                                      # Application name
-  description: A simple Todo List application example  # Application descriptions
+  description: A simple Todo List application example  # Application description
   version: 1.0.0                                       # Application version
-  log_level: error                                     # Default application logger level (e.g., "debug", "info", "warn", "error")
+  log_level: error                                     # Log level: debug, info, warn, error
 
   jwt:
-    secret_key: 4BNVF5H@#RoUMnd604£2BwJJ*             # JWT Secret key
-    expiration_time: 4h                               # Token expiration time
-    refresh_expiration_time: 24h                      # Refresh token expiration time
+    secret_key: ${JWT_SECRET}                          # JWT Secret key from environment
+    expiration_time: 4h                                # Token expiration time
+    refresh_expiration_time: 24h                       # Refresh token expiration time
 
   web:
-    listen: 3000                                      # Server port
-    use_ssl: true                                     # SSL enabled flag
-    crt: /todolist/ssl/mba/mba.crt                    # SSL certificate path
-    key: /todolist/ssl/mba/mba.key                    # SSL key path
-    max_payload_size: 2147483648                      # Max payload size (2GB)
-    write_timeout: 20s                                # Write timeout
-    read_timeout: 20s                                 # Read timeout
-    idle_timeout: 60s                                 # Idle connection timeout
-    no_router: https://fibralink.net.br               # No router URL
-    cors:                                             # CORS configuration
+    listen: 3000                                       # Server port
+    use_ssl: true                                      # SSL enabled flag
+    crt: ${SSL_CERT_PATH}                              # SSL certificate path
+    key: ${SSL_CERT_KEY}                               # SSL key path
+    max_payload_size: 2147483648                       # Max payload size (2GB)
+    write_timeout: 20s                                 # Write timeout
+    read_timeout: 20s                                  # Read timeout
+    idle_timeout: 60s                                  # Idle connection timeout
+    no_router: ${REDIRECT_ON_404}                      # No router URL
+    cors:
       Access-Control-Allow-Credentials: false
       Access-Control-Allow-Headers: "Content-Type, Content-Length, Accept-Encoding, Authorization, Origin"
       Access-Control-Expose-Headers: "Authorization, Content-Disposition"
@@ -27,15 +27,15 @@ application:
       Access-Control-Allow-Origin: "*"
 
 databases:
-  default:                                            # Database name (if is default of the application use instead "default" key)
-    dialector: postgres                               # Database dialector
-    log_level: error                                  # Database log level (e.g., "silent", "info", "warn", "error")
-    dsn: |                                            # Database data source name
-      host=todolist_dev_postgres
-      port=5432
-      user=todolist
-      password=Fo0#97oXggSQ
+  default:
+    dialector: postgres                                # Database dialector
+    log_level: error                                   # DB log level: silent, info, warn, error
+    dsn: |                                             # DSN should use env vars in production!
+      host=${DB_HOST}
+      port=${DB_PORT}
+      user=${DB_USER}
+      password=${DB_PASSWORD}
       search_path=public
-      dbname=todolist
+      dbname=${DB_NAME}
       sslmode=disable
       TimeZone=America/Belem

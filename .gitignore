@@ -4,6 +4,8 @@
 */kubernetes
 */terraform
 *.test.yml
+*.prod.yml
+*/config.dev.yml
 .golangci.yml
 */migration
 */worker

@@ -44,24 +44,22 @@ func (a *JWTTokenAdapter) GenerateTokens(ctx context.Context, issuerName string,
 		}
 	}
 
-	// Get token information to populate metadata
-	_, _, accessExpiry, _ := a.jwtService.GetTokenInfo(accessToken)
-	_, _, refreshExpiry, _ := a.jwtService.GetTokenInfo(refreshToken)
-
-	now := time.Now()
+	// Get token information with full details
+	_, _, accessExpiry, accessIssuedAt, accessID, _, _ := a.jwtService.GetTokenInfo(accessToken)
+	_, _, refreshExpiry, refreshIssuedAt, refreshID, _, _ := a.jwtService.GetTokenInfo(refreshToken)
 
 	return &service.AuthTokens{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		AccessMeta: service.TokenMetadata{
-			TokenID:   generatePlaceholderID(), // JWT service doesn't expose token ID
-			IssuedAt:  now,
+			TokenID:   accessID,
+			IssuedAt:  accessIssuedAt,
 			ExpiresAt: accessExpiry,
 			TokenType: service.TypeAccess,
 		},
 		RefreshMeta: service.TokenMetadata{
-			TokenID:   generatePlaceholderID(), // JWT service doesn't expose token ID
-			IssuedAt:  now,
+			TokenID:   refreshID,
+			IssuedAt:  refreshIssuedAt,
 			ExpiresAt: refreshExpiry,
 			TokenType: service.TypeRefresh,
 		},
@@ -70,30 +68,26 @@ func (a *JWTTokenAdapter) GenerateTokens(ctx context.Context, issuerName string,
 
 // RefreshTokens generates new tokens from a valid refresh token
 func (a *JWTTokenAdapter) RefreshTokens(ctx context.Context, refreshToken string) (*service.AuthTokens, error) {
-	// Generate new tokens
 	newAccessToken, newRefreshToken, err := a.jwtService.RefreshTokens(ctx, refreshToken)
 	if err != nil {
 		return nil, mapJWTError(err)
 	}
 
-	// Get token information to populate metadata
-	_, _, accessExpiry, _ := a.jwtService.GetTokenInfo(newAccessToken)
-	_, _, refreshExpiry, _ := a.jwtService.GetTokenInfo(newRefreshToken)
-
-	now := time.Now()
+	_, _, accessExpiry, accessIssuedAt, accessID, _, _ := a.jwtService.GetTokenInfo(newAccessToken)
+	_, _, refreshExpiry, refreshIssuedAt, refreshID, _, _ := a.jwtService.GetTokenInfo(newRefreshToken)
 
 	return &service.AuthTokens{
 		AccessToken:  newAccessToken,
 		RefreshToken: newRefreshToken,
 		AccessMeta: service.TokenMetadata{
-			TokenID:   generatePlaceholderID(),
-			IssuedAt:  now,
+			TokenID:   accessID,
+			IssuedAt:  accessIssuedAt,
 			ExpiresAt: accessExpiry,
 			TokenType: service.TypeAccess,
 		},
 		RefreshMeta: service.TokenMetadata{
-			TokenID:   generatePlaceholderID(),
-			IssuedAt:  now,
+			TokenID:   refreshID,
+			IssuedAt:  refreshIssuedAt,
 			ExpiresAt: refreshExpiry,
 			TokenType: service.TypeRefresh,
 		},
@@ -102,24 +96,20 @@ func (a *JWTTokenAdapter) RefreshTokens(ctx context.Context, refreshToken string
 
 // ValidateToken validates any type of token and returns its claims
 func (a *JWTTokenAdapter) ValidateToken(ctx context.Context, token string) (*service.ValidationResult, error) {
-	// Try to validate as access token first
 	userID, err := a.jwtService.ValidateAccessToken(ctx, token)
 	tokenType := service.TypeAccess
 
 	if err != nil {
-		// If it's not a valid access token, try refresh token
 		if errors.Is(err, auth.ErrInvalidTokenType) {
 			userID, err = a.jwtService.ValidateRefreshToken(ctx, token)
 			tokenType = service.TypeRefresh
 		}
-
 		if err != nil {
 			return nil, mapJWTError(err)
 		}
 	}
 
-	// Get additional token information
-	_, issuer, expiresAt, err := a.jwtService.GetTokenInfo(token)
+	_, issuer, expiresAt, issuedAt, tokenID, customClaims, err := a.jwtService.GetTokenInfo(token)
 	if err != nil {
 		return nil, &service.TokenServiceError{
 			Code:    service.ErrCodeInvalidToken,
@@ -132,12 +122,12 @@ func (a *JWTTokenAdapter) ValidateToken(ctx context.Context, token string) (*ser
 		UserID:     userID,
 		IssuerName: issuer,
 		Metadata: service.TokenMetadata{
-			TokenID:   generatePlaceholderID(),
-			IssuedAt:  time.Now(), // JWT service doesn't expose issued at
+			TokenID:   tokenID,
+			IssuedAt:  issuedAt,
 			ExpiresAt: expiresAt,
 			TokenType: tokenType,
 		},
-		Claims: nil, // JWT service doesn't expose custom claims
+		Claims: customClaims,
 	}, nil
 }
 
@@ -188,9 +178,4 @@ func mapJWTError(err error) error {
 			Err:     err,
 		}
 	}
-}
-
-// generatePlaceholderID generates a placeholder ID since JWT service doesn't expose token IDs
-func generatePlaceholderID() string {
-	return "n/a"
 }

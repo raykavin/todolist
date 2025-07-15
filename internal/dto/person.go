@@ -11,7 +11,6 @@ type CreatePersonRequest struct {
 
 // UpdatePersonRequest represents the request to update a person
 type UpdatePersonRequest struct {
-	Name  *string `json:"name,omitempty"  validate:"omitempty,min=2,max=100"`
 	Email *string `json:"email,omitempty" validate:"omitempty,email"`
 	Phone *string `json:"phone,omitempty" validate:"omitempty,min=11,max=20"`
 }

@@ -180,8 +180,15 @@ func (s *JWTToken) RevokeToken(ctx context.Context, token string) error {
 	return nil
 }
 
-// GetTokenInfo extracts information from a token without full validation
-func (s *JWTToken) GetTokenInfo(token string) (userID int64, issuer string, expiresAt time.Time, err error) {
+// GetTokenInfo extracts all useful information from a token
+func (s *JWTToken) GetTokenInfo(token string) (
+	userID int64,
+	issuer string,
+	expiresAt, issuedAt time.Time,
+	tokenID string,
+	customClaims map[string]any,
+	err error,
+) {
 	claims := &jwtClaims{}
 
 	_, err = jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (any, error) {
@@ -192,10 +199,10 @@ func (s *JWTToken) GetTokenInfo(token string) (userID int64, issuer string, expi
 	})
 
 	if err != nil && !errors.Is(err, jwt.ErrTokenExpired) {
-		return 0, "", time.Time{}, ErrInvalidToken
+		return 0, "", time.Time{}, time.Time{}, "", nil, ErrInvalidToken
 	}
 
-	return claims.UserID, claims.Issuer, claims.ExpiresAt.Time, nil
+	return claims.UserID, claims.Issuer, claims.ExpiresAt.Time, claims.IssuedAt.Time, claims.TokenID, claims.Custom, nil
 }
 
 // generateToken creates a JWT token with the specified parameters

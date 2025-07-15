@@ -149,7 +149,7 @@ func (h *AuthHandler) Login(ctx http.RequestContext) {
 // @Failure 400 {object} dto.Response
 // @Failure 401 {object} dto.Response
 // @Security BearerAuth
-// @Router /api/v1/auth/change-password [post]
+// @Router /api/v1/users/password [put]
 func (h *AuthHandler) ChangePassword(ctx http.RequestContext) {
 	userID, err := getAuthenticatedUserID(ctx)
 	if err != nil || userID == 0 {
@@ -183,19 +183,3 @@ func (h *AuthHandler) ChangePassword(ctx http.RequestContext) {
 
 	ctx.JSON(netHttp.StatusOK, dto.SuccessResponse(nil, "Password changed successfully"))
 }
-
-// Register registers auth routes
-// Example usage with Gin:
-// func (h *AuthHandler) Register(router *gin.RouterGroup, authMiddleware gin.HandlerFunc) {
-// 	auth := router.Group("/auth")
-// 	{
-// 		// Public routes
-// 		auth.POST("/register", h.Register)
-// 		auth.POST("/login", h.Login)
-//
-// 		// Protected routes
-// 		auth.Use(authMiddleware)
-// 		auth.POST("/change-password", h.ChangePassword)
-// 		auth.GET("/me", h.GetCurrentUser)
-// 	}
-// }

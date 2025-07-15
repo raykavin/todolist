@@ -55,6 +55,7 @@ func NewUseCases(p UseCaseParams) (UseCaseContainer, error) {
 	return UseCaseContainer{
 		// Person Use Cases
 		CreatePersonUseCase: ucPerson.NewCreatePersonUseCase(p.PersonRepository),
+		UpdatePersonUseCase: ucPerson.NewUpdatePersonUseCase(p.PersonRepository),
 		GetPersonUseCase:    ucPerson.NewGetPersonUseCase(p.PersonRepository),
 
 		// User Use Cases

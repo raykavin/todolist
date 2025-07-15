@@ -83,12 +83,12 @@ func (r *personRepository) FindByEmail(ctx context.Context, email string) (*enti
 	return r.mapper.ToDomain(person)
 }
 
-// ExistsByEmail checks if a person exists by email
-func (r *personRepository) ExistsByEmail(ctx context.Context, email string) (bool, error) {
+// ExistsByTaxID checks if a person tax id exists
+func (r *personRepository) ExistsByTaxID(ctx context.Context, taxID string) (bool, error) {
 	var count int64
 
 	if err := r.db.WithContext(ctx).Model(&model.Person{}).
-		Where("email = ?", email).
+		Where("tax_id = ?", taxID).
 		Count(&count).Error; err != nil {
 		return false, err
 	}

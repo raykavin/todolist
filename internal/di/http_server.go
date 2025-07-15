@@ -9,9 +9,10 @@ import (
 	"time"
 
 	adptHttp "todolist/internal/adapter/delivery/http"
+	"todolist/internal/adapter/delivery/http/handler"
 	"todolist/internal/adapter/delivery/http/middleware"
 	"todolist/internal/config"
-	"todolist/internal/http/handler"
+	"todolist/internal/service"
 	"todolist/pkg/log"
 	"todolist/pkg/web"
 
@@ -33,6 +34,7 @@ type HTTPServerParams struct {
 	AuthHandler   *handler.AuthHandler
 	PersonHandler *handler.PersonHandler
 	TodoHandler   *handler.TodoHandler
+	TokenService  service.TokenService
 	Log           log.ExtendedLog
 	AppConfig     config.ApplicationProvider
 }
@@ -93,7 +95,6 @@ func registerMiddleware(router *gin.Engine, webConfig config.WebConfigProvider, 
 
 // registerRoutes defines all HTTP routes for the API
 func registerRoutes(router *gin.Engine, params HTTPServerParams) {
-	// Rota para Healthcheck
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status":  "ok",
@@ -116,11 +117,11 @@ func registerRoutes(router *gin.Engine, params HTTPServerParams) {
 
 		// Rotas protegidas
 		protected := v1.Group("")
-		protected.Use(middleware.AuthMiddleware(middleware.JWTConfig{Secret: "your-secret-key"}))
+		protected.Use(middleware.AuthMiddleware(params.TokenService))
 
 		users := protected.Group("/users")
 		users.PUT("/password", adptHttp.WrapHandler(params.AuthHandler.ChangePassword))
-
+ 
 		people := protected.Group("/people")
 		people.POST("", adptHttp.WrapHandler(params.PersonHandler.CreatePerson))
 		people.GET("/:id", adptHttp.WrapHandler(params.PersonHandler.GetPerson))

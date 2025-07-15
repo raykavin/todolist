@@ -15,33 +15,33 @@ import (
 
 // TodoHandler handles todo-related HTTP requests
 type TodoHandler struct {
-	createTodoUC    ucTodo.CreateTodoUseCase
-	updateTodoUC    ucTodo.UpdateTodoUseCase
-	completeTodoUC  ucTodo.CompleteTodoUseCase
-	deleteTodoUC    ucTodo.DeleteTodoUseCase
-	getTodoUC       ucTodo.GetTodoUseCase
-	listTodosUC     ucTodo.ListTodosUseCase
-	getStatisticsUC ucTodo.GetStatisticsUseCase
+	createTodoUseCase    ucTodo.CreateTodoUseCase
+	updateTodoUseCase    ucTodo.UpdateTodoUseCase
+	completeTodoUseCase  ucTodo.CompleteTodoUseCase
+	deleteTodoUseCase    ucTodo.DeleteTodoUseCase
+	getTodoUseCase       ucTodo.GetTodoUseCase
+	listTodosUseCase     ucTodo.ListTodosUseCase
+	getStatisticsUseCase ucTodo.GetStatisticsUseCase
 }
 
 // NewTodoHandler creates a new todo handler
 func NewTodoHandler(
-	createTodoUC ucTodo.CreateTodoUseCase,
-	updateTodoUC ucTodo.UpdateTodoUseCase,
-	completeTodoUC ucTodo.CompleteTodoUseCase,
-	deleteTodoUC ucTodo.DeleteTodoUseCase,
-	getTodoUC ucTodo.GetTodoUseCase,
-	listTodosUC ucTodo.ListTodosUseCase,
-	getStatisticsUC ucTodo.GetStatisticsUseCase,
+	createTodoUseCase ucTodo.CreateTodoUseCase,
+	updateTodoUseCase ucTodo.UpdateTodoUseCase,
+	completeTodoUseCase ucTodo.CompleteTodoUseCase,
+	deleteTodoUseCase ucTodo.DeleteTodoUseCase,
+	getTodoUseCase ucTodo.GetTodoUseCase,
+	listTodosUseCase ucTodo.ListTodosUseCase,
+	getStatisticsUseCase ucTodo.GetStatisticsUseCase,
 ) *TodoHandler {
 	return &TodoHandler{
-		createTodoUC:    createTodoUC,
-		updateTodoUC:    updateTodoUC,
-		completeTodoUC:  completeTodoUC,
-		deleteTodoUC:    deleteTodoUC,
-		getTodoUC:       getTodoUC,
-		listTodosUC:     listTodosUC,
-		getStatisticsUC: getStatisticsUC,
+		createTodoUseCase:    createTodoUseCase,
+		updateTodoUseCase:    updateTodoUseCase,
+		completeTodoUseCase:  completeTodoUseCase,
+		deleteTodoUseCase:    deleteTodoUseCase,
+		getTodoUseCase:       getTodoUseCase,
+		listTodosUseCase:     listTodosUseCase,
+		getStatisticsUseCase: getStatisticsUseCase,
 	}
 }
 
@@ -77,7 +77,7 @@ func (h *TodoHandler) CreateTodo(ctx http.RequestContext) {
 	}
 
 	// Create todo
-	todo, err := h.createTodoUC.Execute(ctx.Context(), userID, input)
+	todo, err := h.createTodoUseCase.Execute(ctx.Context(), userID, input)
 	if err != nil {
 		ctx.JSON(netHttp.StatusInternalServerError,
 			dto.ErrorResponse("CREATE_FAILED", "Failed to create todo", nil))
@@ -169,7 +169,7 @@ func (h *TodoHandler) ListTodos(ctx http.RequestContext) {
 	}
 
 	// List todos
-	result, err := h.listTodosUC.Execute(ctx.Context(), userID, filters, options)
+	result, err := h.listTodosUseCase.Execute(ctx.Context(), userID, filters, options)
 	if err != nil {
 		ctx.JSON(netHttp.StatusInternalServerError,
 			dto.ErrorResponse("LIST_FAILED", "Failed to list todos", nil))
@@ -216,7 +216,7 @@ func (h *TodoHandler) GetTodo(ctx http.RequestContext) {
 		return
 	}
 
-	todo, err := h.getTodoUC.Execute(ctx.Context(), userID, todoID)
+	todo, err := h.getTodoUseCase.Execute(ctx.Context(), userID, todoID)
 	if err != nil {
 		if err == shared.ErrNotFound || err.Error() == "unauthorized to access this todo" {
 			ctx.JSON(netHttp.StatusNotFound,
@@ -277,7 +277,7 @@ func (h *TodoHandler) UpdateTodo(ctx http.RequestContext) {
 	}
 
 	// Update todo
-	todo, err := h.updateTodoUC.Execute(ctx.Context(), userID, todoID, input)
+	todo, err := h.updateTodoUseCase.Execute(ctx.Context(), userID, todoID, input)
 	if err != nil {
 		switch {
 		case errors.Is(err, shared.ErrNotFound):
@@ -310,7 +310,7 @@ func (h *TodoHandler) UpdateTodo(ctx http.RequestContext) {
 // @Failure 400 {object} dto.Response
 // @Failure 404 {object} dto.Response
 // @Security BearerAuth
-// @Router /api/v1/todos/{id}/complete [post]
+// @Router /api/v1/todos/{id}/complete [put]
 func (h *TodoHandler) CompleteTodo(ctx http.RequestContext) {
 	userID, err := getAuthenticatedUserID(ctx)
 	if err != nil || userID == 0 {
@@ -330,7 +330,7 @@ func (h *TodoHandler) CompleteTodo(ctx http.RequestContext) {
 		return
 	}
 
-	todo, err := h.completeTodoUC.Execute(ctx.Context(), userID, todoID)
+	todo, err := h.completeTodoUseCase.Execute(ctx.Context(), userID, todoID)
 	if err != nil {
 		switch {
 		case errors.Is(err, shared.ErrNotFound):
@@ -382,7 +382,7 @@ func (h *TodoHandler) DeleteTodo(ctx http.RequestContext) {
 		return
 	}
 
-	err = h.deleteTodoUC.Execute(ctx.Context(), userID, todoID)
+	err = h.deleteTodoUseCase.Execute(ctx.Context(), userID, todoID)
 	if err != nil {
 		if err == shared.ErrNotFound || err.Error() == "unauthorized to access this todo" {
 			ctx.JSON(netHttp.StatusNotFound,
@@ -418,7 +418,7 @@ func (h *TodoHandler) GetStatistics(ctx http.RequestContext) {
 		return
 	}
 
-	stats, err := h.getStatisticsUC.Execute(ctx.Context(), userID)
+	stats, err := h.getStatisticsUseCase.Execute(ctx.Context(), userID)
 	if err != nil {
 		ctx.JSON(netHttp.StatusInternalServerError,
 			dto.ErrorResponse("STATS_FAILED", "Failed to get statistics", nil))
@@ -429,18 +429,3 @@ func (h *TodoHandler) GetStatistics(ctx http.RequestContext) {
 
 	ctx.JSON(netHttp.StatusOK, dto.SuccessResponse(stats, ""))
 }
-
-// // Register registers todo routes
-// func (h *TodoHandler) Register(router *gin.RouterGroup, authMiddleware gin.HandlerFunc) {
-// 	todos := router.Group("/todos")
-// 	todos.Use(authMiddleware)
-// 	{
-// 		todos.POST("/", h.CreateTodo)
-// 		todos.GET("/", h.ListTodos)
-// 		todos.GET("/statistics", h.GetStatistics)
-// 		todos.GET("/:id", h.GetTodo)
-// 		todos.PUT("/:id", h.UpdateTodo)
-// 		todos.POST("/:id/complete", h.CompleteTodo)
-// 		todos.DELETE("/:id", h.DeleteTodo)
-// 	}
-// }

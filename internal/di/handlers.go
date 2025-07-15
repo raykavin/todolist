@@ -1,7 +1,7 @@
 package di
 
 import (
-	"todolist/internal/http/handler"
+	"todolist/internal/adapter/delivery/http/handler"
 	ucPerson "todolist/internal/usecase/person"
 	ucTodo "todolist/internal/usecase/todo"
 	ucUser "todolist/internal/usecase/user"

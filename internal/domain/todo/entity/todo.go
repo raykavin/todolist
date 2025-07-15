@@ -2,6 +2,7 @@ package entity
 
 import (
 	"errors"
+	"slices"
 	"time"
 	"todolist/internal/domain/shared"
 	sharedvo "todolist/internal/domain/shared/valueobject"
@@ -207,12 +208,10 @@ func (t *Todo) Reopen() error {
 
 // AddTag adds a tag to the todo, ensuring no duplicates
 func (t *Todo) AddTag(tag string) {
-	// Check if tag already exists
-	for _, existingTag := range t.tags {
-		if existingTag == tag {
-			return
-		}
+	if t.HasTag(tag) {
+		return
 	}
+
 	t.tags = append(t.tags, tag)
 	t.SetAsModified()
 }
@@ -231,10 +230,5 @@ func (t *Todo) RemoveTag(tag string) {
 
 // HasTag checks if the todo has a specific tag
 func (t *Todo) HasTag(tag string) bool {
-	for _, existingTag := range t.tags {
-		if existingTag == tag {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(t.tags, tag)
 }

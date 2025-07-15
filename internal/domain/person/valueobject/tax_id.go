@@ -86,6 +86,23 @@ func (d TaxID) Formatted() string {
 	return d.formatted
 }
 
+// FormatMasked returns a partially masked version of the TaxID.
+// For CPF: XXX.***.***-XX
+// For CNPJ: XX.XXX.***/XXXX-XX
+func (d TaxID) FormatMasked() string {
+	switch d.taxIDType {
+	case CPF:
+		if len(d.number) == 11 {
+			return d.number[:3] + ".***.***-" + d.number[9:]
+		}
+	case CNPJ:
+		if len(d.number) == 14 {
+			return d.number[:2] + "." + d.number[2:5] + ".***/" + d.number[8:12] + "-" + d.number[12:]
+		}
+	}
+	return d.number
+}
+
 // String implements the Stringer interface, returning the formatted taxID
 func (d TaxID) String() string {
 	return d.formatted

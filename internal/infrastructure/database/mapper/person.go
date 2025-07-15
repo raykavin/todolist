@@ -22,7 +22,7 @@ func (m *PersonMapper) ToModel(person *entity.Person) *model.Person {
 		Name:      person.Name(),
 		Phone:     person.Phone(),
 		Email:     person.Email().Value(),
-		TaxID:     person.TaxID().String(),
+		TaxID:     person.TaxID().Number(),
 		CreatedAt: person.CreatedAt(),
 		UpdatedAt: person.UpdatedAt(),
 	}

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"time"
 	"todolist/internal/domain/shared"
 	"todolist/internal/domain/todo/entity"
 	"todolist/internal/domain/todo/repository"
@@ -31,25 +32,22 @@ func (r *todoRepository) Save(ctx context.Context, todo *entity.Todo) error {
 	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		todoModel := r.mapper.ToModel(todo)
 
-		// Save todo
-		if err := tx.Save(todoModel).Error; err != nil {
+		// Create or first todo
+		if err := tx.FirstOrCreate(todoModel).Error; err != nil {
 			return err
 		}
 
-		// Handle tags
-		// First, delete existing tag associations
+		// Delete old associations
 		if err := tx.
 			Where("todo_id = ?", todoModel.ID).
-			Delete(&model.TodoTag{}).
-			Error; err != nil {
+			Delete(&model.TodoTag{}).Error; err != nil {
 			return err
 		}
 
-		// Then, create new tag associations
+		// Create new associations
 		for _, tagName := range todo.Tags() {
 			tagModel := &model.Tag{}
 
-			// Find or create tag
 			if err := tx.
 				Where("name = ?", tagName).
 				FirstOrCreate(tagModel, model.Tag{Name: tagName}).
@@ -57,10 +55,10 @@ func (r *todoRepository) Save(ctx context.Context, todo *entity.Todo) error {
 				return err
 			}
 
-			// Create association
 			todoTag := model.TodoTag{
-				TodoID: tagModel.ID,
-				TagID:  tagModel.ID,
+				TodoID:    todoModel.ID,
+				TagID:     tagModel.ID,
+				CreatedAt: time.Now(),
 			}
 
 			if err := tx.Create(&todoTag).Error; err != nil {

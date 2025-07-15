@@ -12,37 +12,23 @@ import (
 
 // PersonHandler handles person-related HTTP requests
 type PersonHandler struct {
-	createPersonUC ucPerson.CreatePersonUseCase
-	updatePersonUC ucPerson.UpdatePersonUseCase
-	getPersonUC    ucPerson.GetPersonUseCase
+	createPersonUseCase ucPerson.CreatePersonUseCase
+	updatePersonUseCase ucPerson.UpdatePersonUseCase
+	getPersonUseCase    ucPerson.GetPersonUseCase
 }
 
 // NewPersonHandler creates a new person handler
 func NewPersonHandler(
-	createPersonUC ucPerson.CreatePersonUseCase,
-	updatePersonUC ucPerson.UpdatePersonUseCase,
-	getPersonUC ucPerson.GetPersonUseCase,
+	createPersonUseCase ucPerson.CreatePersonUseCase,
+	updatePersonUseCase ucPerson.UpdatePersonUseCase,
+	getPersonUseCase ucPerson.GetPersonUseCase,
 ) *PersonHandler {
 	return &PersonHandler{
-		createPersonUC: createPersonUC,
-		updatePersonUC: updatePersonUC,
-		getPersonUC:    getPersonUC,
+		createPersonUseCase: createPersonUseCase,
+		updatePersonUseCase: updatePersonUseCase,
+		getPersonUseCase:    getPersonUseCase,
 	}
 }
-
-// Register registers person routes
-// func (h *PersonHandler) Register(router *gin.RouterGroup) {
-// 	people := router.Group("/people")
-// 	{
-// 		// Public routes
-// 		people.POST("/", h.CreatePerson)
-
-// 		// Protected routes
-// 		people.Use(authMiddleware)
-// 		people.GET("/:id", h.GetPerson)
-// 		people.PUT("/:id", h.UpdatePerson)
-// 	}
-// }
 
 // CreatePerson godoc
 // @Summary Create a new person
@@ -67,14 +53,14 @@ func (h *PersonHandler) CreatePerson(ctx http.RequestContext) {
 	}
 
 	// Create person
-	person, err := h.createPersonUC.Execute(ctx.Context(), input)
+	person, err := h.createPersonUseCase.Execute(ctx.Context(), input)
 	if err != nil {
 		if errors.Is(err, valueobject.ErrInvalidEmail) {
 			ctx.JSON(netHttp.StatusConflict,
 				dto.ErrorResponse("EMAIL_EXISTS", "Email already exists", nil))
 		} else {
 			ctx.JSON(netHttp.StatusInternalServerError,
-				dto.ErrorResponse("CREATE_FAILED", "Failed to create person", nil))
+				dto.ErrorResponse("CREATE_FAILED", "Failed to create person", parseError(err)))
 		}
 
 		ctx.Abort()
@@ -105,7 +91,7 @@ func (h *PersonHandler) GetPerson(ctx http.RequestContext) {
 		return
 	}
 
-	person, err := h.getPersonUC.Execute(ctx.Context(), personID)
+	person, err := h.getPersonUseCase.Execute(ctx.Context(), personID)
 	if err != nil {
 		if errors.Is(err, shared.ErrNotFound) {
 			ctx.JSON(netHttp.StatusNotFound,
@@ -165,7 +151,7 @@ func (h *PersonHandler) UpdatePerson(ctx http.RequestContext) {
 	}
 
 	// Update person
-	person, err := h.updatePersonUC.Execute(ctx.Context(), personID, input)
+	person, err := h.updatePersonUseCase.Execute(ctx.Context(), personID, input)
 	if err != nil {
 		if err == shared.ErrNotFound {
 			ctx.JSON(netHttp.StatusNotFound,

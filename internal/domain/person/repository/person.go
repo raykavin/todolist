@@ -17,7 +17,7 @@ type PersonRepository interface {
 	FindByEmail(ctx context.Context, email string) (*entity.Person, error)
 
 	// Validations
-	ExistsByEmail(ctx context.Context, email string) (bool, error)
+	ExistsByTaxID(ctx context.Context, taxID string) (bool, error)
 }
 
 // PersonQueryRepository defines complex query operations for Person

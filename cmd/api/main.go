@@ -27,6 +27,17 @@ var (
 
 const shutdownTimeout = 5 * time.Second
 
+// @title           Todo List API
+// @version         1.0
+// @description     A simple Todo List application example
+
+// @contact.name   API Support
+// @contact.url    https://fibralink.net.br
+// @contact.email  soge@fibralink.net.br
+
+// @host      localhost:3000
+// @BasePath  /api/v1
+
 func main() {
 	flag.Parse()
 

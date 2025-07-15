@@ -81,7 +81,7 @@ type ValidationResult struct {
 	// Metadata contains additional token information
 	Metadata TokenMetadata `json:"metadata"`
 	// Claims contains any custom claims from the token
-	Claims map[string]interface{} `json:"claims,omitempty"`
+	Claims map[string]any `json:"claims,omitempty"`
 }
 
 // TokenService defines the interface for token generation and validation

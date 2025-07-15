@@ -32,13 +32,6 @@ func (uc *updatePersonUseCase) Execute(ctx context.Context, personID int64, inpu
 		return nil, shared.ErrNotFound
 	}
 
-	// Update name if provided
-	if input.Name != nil {
-		if err := person.SetName(*input.Name); err != nil {
-			return nil, err
-		}
-	}
-
 	// Update email if provided
 	if input.Email != nil {
 		// Check if new email already exists

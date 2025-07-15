@@ -28,16 +28,6 @@ func NewCreatePersonUseCase(personRepository repository.PersonRepository) Create
 
 // Execute creates a new person
 func (uc *createPersonUseCase) Execute(ctx context.Context, input dto.CreatePersonRequest) (*dto.PersonResponse, error) {
-	// Check if email already exists
-	exists, err := uc.personRepository.ExistsByEmail(ctx, input.Email)
-	if err != nil {
-		return nil, err
-	}
-
-	if exists {
-		return nil, vo.ErrInvalidEmail
-	}
-
 	// Validate Tax ID
 	taxID, err := vo.NewTaxID(input.TaxID)
 	if err != nil {
@@ -48,6 +38,16 @@ func (uc *createPersonUseCase) Execute(ctx context.Context, input dto.CreatePers
 	email, err := vo.NewEmail(input.Email)
 	if err != nil {
 		return nil, err
+	}
+
+	// Check if tax id already exists
+	exists, err := uc.personRepository.ExistsByTaxID(ctx, taxID.Number())
+	if err != nil {
+		return nil, err
+	}
+
+	if exists {
+		return nil, vo.ErrInvalidTaxIDNumber
 	}
 
 	birthDate := (*sharedvo.Date)(nil)
@@ -90,6 +90,8 @@ func toPersonResponse(person *entity.Person) *dto.PersonResponse {
 		ID:        person.ID(),
 		Name:      person.Name(),
 		Email:     person.Email().Value(),
+		TaxID:     person.TaxID().FormatMasked(),
+		BirthDate: person.BirthDate().String(),
 		Phone:     person.Phone(),
 		CreatedAt: person.CreatedAt().Format("2006-01-02T15:04:05Z"),
 		UpdatedAt: person.UpdatedAt().Format("2006-01-02T15:04:05Z"),

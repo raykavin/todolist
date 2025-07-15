@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"fmt"
 	sharedvo "todolist/internal/domain/shared/valueobject"
 	"todolist/internal/domain/todo/entity"
 	vo "todolist/internal/domain/todo/valueobject"
@@ -75,14 +76,13 @@ func (m *TodoMapper) ToDomain(model *model.Todo) (*entity.Todo, error) {
 	status := vo.TodoStatus(model.Status)
 	if status != vo.StatusPending && status.IsValid() {
 		if err := todo.ChangeStatus(status); err != nil {
-			// If status change fails, just keep the default
+			return nil, fmt.Errorf("change todo status failed: %w", err)
 		}
 	}
 
 	// Set completed time if exists
-	if model.CompletedAt != nil && todo.Status() == vo.StatusCompleted {
-		// Use reflection or add a method to set CompletedAt directly
-		// For now, the ChangeStatus method already handles this
+	if model.CompletedAt != nil && todo.Status() == vo.StatusCompleted && !todo.IsCompleted() {
+		todo.Complete()
 	}
 
 	// Set tags

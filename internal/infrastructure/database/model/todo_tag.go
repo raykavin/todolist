@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 // TodoTag is the junction table for many-to-many relationship
 type TodoTag struct {

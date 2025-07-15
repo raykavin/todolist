@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"time"
-	"todolist/internal/adapter/http"
+	"todolist/internal/adapter/delivery/http"
 	"todolist/pkg/log"
 
 	"github.com/gin-gonic/gin"

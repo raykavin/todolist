@@ -13,6 +13,8 @@ import "fmt"
  * This keeps the rest of the application decoupled from configuration file formats.
  */
 
+var _ ConfigProvider = (*Config)(nil)
+
 type Config struct {
 	Application application                `mapstructure:"application"`
 	Databases   map[string]databaseService `mapstructure:"databases"`

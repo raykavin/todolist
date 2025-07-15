@@ -1,9 +1,9 @@
 package database
 
 /*
- * seeder.go
+ * seed_default.go
  *
- * This file provides database seeding logic.
+ * This file provides default database seeding.
  *
  * Use it to populate the database with initial or sample data,
  * which can help in development, testing, or demo environments.
@@ -21,14 +21,14 @@ import (
 )
 
 // Seed runs all seeders
-func Seed(db *gorm.DB) error {
+func SeedDefault(db *gorm.DB) error {
 	// Seed in order of dependencies
 	if err := seedTags(db); err != nil {
 		return fmt.Errorf("failed to seed tags: %w", err)
 	}
 
-	if err := seedPersonsAndUsers(db); err != nil {
-		return fmt.Errorf("failed to seed persons and users: %w", err)
+	if err := seedPeopleAndUsers(db); err != nil {
+		return fmt.Errorf("failed to seed people and users: %w", err)
 	}
 
 	return nil
@@ -58,8 +58,8 @@ func seedTags(db *gorm.DB) error {
 	return nil
 }
 
-// seedPersonsAndUsers seeds test persons and users
-func seedPersonsAndUsers(db *gorm.DB) error {
+// seedPeopleAndUsers seeds test people and users
+func seedPeopleAndUsers(db *gorm.DB) error {
 	testData := []struct {
 		person model.Person
 		user   model.User
@@ -90,7 +90,7 @@ func seedPersonsAndUsers(db *gorm.DB) error {
 		// Create person
 		var existingPerson model.Person
 		if err := db.Where("email = ?", data.person.Email).First(&existingPerson).Error; err == nil {
-			continue // Person already exists
+			continue
 		}
 
 		if err := db.Create(&data.person).Error; err != nil {

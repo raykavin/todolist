@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	adptHttp "todolist/internal/adapter/http"
-	"todolist/internal/adapter/http/middleware"
+	adptHttp "todolist/internal/adapter/delivery/http"
+	"todolist/internal/adapter/delivery/http/middleware"
 	"todolist/internal/config"
 	"todolist/internal/http/handler"
 	"todolist/pkg/log"
@@ -18,6 +18,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 	"golang.org/x/net/http2"
+
+	_ "todolist/docs"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // HTTPServerParams defines the dependencies required to create the HTTP server
@@ -48,7 +53,7 @@ func NewHTTPServer(params HTTPServerParams) (HTTPServerContainer, error) {
 		port = 8080
 	}
 
-	debugMode := params.AppConfig.GetLoggerLevel() == "debug"
+	debugMode := params.AppConfig.GetLogLevel() == "debug"
 
 	engine, err := web.NewGin("", port, debugMode)
 	if err != nil {
@@ -88,6 +93,7 @@ func registerMiddleware(router *gin.Engine, webConfig config.WebConfigProvider, 
 
 // registerRoutes defines all HTTP routes for the API
 func registerRoutes(router *gin.Engine, params HTTPServerParams) {
+	// Rota para Healthcheck
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status":  "ok",
@@ -96,23 +102,29 @@ func registerRoutes(router *gin.Engine, params HTTPServerParams) {
 		})
 	})
 
+	router.GET("/", func(c *gin.Context) {
+		c.Redirect(302, "/swagger/index.html")
+	})
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	v1 := router.Group("/api/v1")
 	{
 		auth := v1.Group("/auth")
 		auth.POST("/register", adptHttp.WrapHandler(params.AuthHandler.Register))
 		auth.POST("/login", adptHttp.WrapHandler(params.AuthHandler.Login))
 
-		// Protected routes
+		// Rotas protegidas
 		protected := v1.Group("")
 		protected.Use(middleware.AuthMiddleware(middleware.JWTConfig{Secret: "your-secret-key"}))
 
 		users := protected.Group("/users")
 		users.PUT("/password", adptHttp.WrapHandler(params.AuthHandler.ChangePassword))
 
-		persons := protected.Group("/persons")
-		persons.POST("", adptHttp.WrapHandler(params.PersonHandler.CreatePerson))
-		persons.GET("/:id", adptHttp.WrapHandler(params.PersonHandler.GetPerson))
-		persons.PUT("/:id", adptHttp.WrapHandler(params.PersonHandler.UpdatePerson))
+		people := protected.Group("/people")
+		people.POST("", adptHttp.WrapHandler(params.PersonHandler.CreatePerson))
+		people.GET("/:id", adptHttp.WrapHandler(params.PersonHandler.GetPerson))
+		people.PUT("/:id", adptHttp.WrapHandler(params.PersonHandler.UpdatePerson))
 
 		todos := protected.Group("/todos")
 		todos.POST("", adptHttp.WrapHandler(params.TodoHandler.CreateTodo))
@@ -171,8 +183,16 @@ func httpServerLifecycle(lc fx.Lifecycle, engine *gin.Engine, params HTTPServerP
 				var err error
 				if webConfig.GetUseSSL() {
 					err = server.ListenAndServeTLS(webConfig.GetSSLCert(), webConfig.GetSSLKey())
+					if err != nil {
+						params.Log.Errorf("Failed to start HTTPS server: %v. Falling back to HTTP...", err)
+						err = server.ListenAndServe()
+					}
 				} else {
 					err = server.ListenAndServe()
+				}
+
+				if err != nil && err != http.ErrServerClosed {
+					params.Log.Fatalf("Server failed to start: %v", err)
 				}
 
 				if err != nil && err != http.ErrServerClosed {

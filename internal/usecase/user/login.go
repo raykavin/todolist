@@ -32,11 +32,14 @@ type loginUseCase struct {
 func NewLoginUseCase(
 	userRepository rptUser.UserRepository,
 	personRepository rptPerson.PersonRepository,
+	tokenService service.TokenService,
 	tokenIssuerName string,
 ) LoginUseCase {
 	return &loginUseCase{
 		userRepository:   userRepository,
 		personRepository: personRepository,
+		tokenService:     tokenService,
+		tokenIssuerName:  tokenIssuerName,
 	}
 }
 
@@ -65,14 +68,17 @@ func (uc *loginUseCase) Execute(ctx context.Context, input dto.AuthRequest) (*dt
 	}
 
 	// Generate token
-	token, err := uc.tokenService.Generate(uc.tokenIssuerName, user.ID())
+	authTokens, err := uc.tokenService.GenerateTokens(ctx, uc.tokenIssuerName, user.ID())
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %w", err)
 	}
 
 	// Return auth response
 	return &dto.AuthResponse{
-		Token: token,
-		User:  toUserResponseWithPerson(user, person),
+		Token:            authTokens.AccessToken,
+		RefreshToken:     authTokens.RefreshToken,
+		ExpiresAt:        authTokens.AccessMeta.ExpiresAt,
+		RefreshExpiresAt: authTokens.RefreshMeta.ExpiresAt,
+		User:             toUserResponseWithPerson(user, person),
 	}, nil
 }

@@ -5,7 +5,7 @@ import (
 	netHttp "net/http"
 	"strconv"
 	"strings"
-	"todolist/internal/adapter/http"
+	"todolist/internal/adapter/delivery/http"
 	"todolist/internal/domain/shared"
 	"todolist/internal/domain/todo/entity"
 	"todolist/internal/domain/todo/valueobject"
@@ -405,7 +405,7 @@ func (h *TodoHandler) DeleteTodo(ctx http.RequestContext) {
 // @Tags todos
 // @Accept json
 // @Produce json
-// @Success 200 {object} dto.Response{data=dto.TodoStatistics}
+// @Success 200 {object} dto.Response{data=valueobject.TodoStatistics}
 // @Security BearerAuth
 // @Router /api/v1/todos/statistics [get]
 func (h *TodoHandler) GetStatistics(ctx http.RequestContext) {

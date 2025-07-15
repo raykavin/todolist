@@ -14,6 +14,8 @@ import "time"
  * in different environments.
  */
 
+var _ WebConfigProvider = (*webConfig)(nil)
+
 // webConfig defines the configuration for the web server.
 type webConfig struct {
 	Listen         uint16            `mapstructure:"listen"`           // Server listening port

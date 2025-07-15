@@ -4,7 +4,7 @@ import (
 	"errors"
 	netHttp "net/http"
 
-	"todolist/internal/adapter/http"
+	"todolist/internal/adapter/delivery/http"
 	entPerson "todolist/internal/domain/person/entity"
 	"todolist/internal/domain/person/valueobject"
 	entUser "todolist/internal/domain/user/entity"
@@ -102,7 +102,7 @@ func (h *AuthHandler) Register(ctx http.RequestContext) {
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param credentials body dto.LoginRequest true "Login credentials"
+// @Param credentials body dto.AuthRequest true "Login credentials"
 // @Success 200 {object} dto.Response{data=dto.AuthResponse}
 // @Failure 400 {object} dto.Response
 // @Failure 401 {object} dto.Response
@@ -134,18 +134,6 @@ func (h *AuthHandler) Login(ctx http.RequestContext) {
 		ctx.Abort()
 		return
 	}
-
-	// Generate JWT token
-	// token, err := h.generateToken(authResponse.User)
-	// if err != nil {
-	// 	ctx.JSON(netHttp.StatusInternalServerError,
-	// 		dto.ErrorResponse("TOKEN_GENERATION_FAILED", "Failed to generate token", nil))
-	// 	ctx.Abort()
-	// 	return
-	// }
-
-	// Update token in response
-	authResponse.Token = "test"
 
 	ctx.JSON(netHttp.StatusOK, dto.SuccessResponse(authResponse, "Login successful"))
 }

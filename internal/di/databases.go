@@ -6,6 +6,7 @@ import (
 	"todolist/internal/config"
 	infraDB "todolist/internal/infrastructure/database"
 	"todolist/pkg/database"
+	"todolist/pkg/log"
 
 	"go.uber.org/fx"
 	"gorm.io/gorm"
@@ -14,7 +15,9 @@ import (
 // DatabaseParams defines the dependencies required to create the database engine
 type DatabaseParams struct {
 	fx.In
-	DefaultDatabase config.DatabaseServiceProvider
+	DefaultDatabaseConfig config.DatabaseServiceProvider
+	ApplicationConfig     config.ApplicationProvider
+	Log                   log.ExtendedLog
 }
 
 // DatabaseContainer groups all database implementations provided from Fx
@@ -51,7 +54,7 @@ func validateDatabaseConfig(provider config.DatabaseServiceProvider) error {
 // newDatabaseContainer creates all database implementations with proper validation
 func newDatabaseContainer(p DatabaseParams) (DatabaseContainer, error) {
 	// Validate configuration
-	if err := validateDatabaseConfig(p.DefaultDatabase); err != nil {
+	if err := validateDatabaseConfig(p.DefaultDatabaseConfig); err != nil {
 		return DatabaseContainer{}, fmt.Errorf("invalid database configuration: %w", err)
 	}
 
@@ -59,20 +62,24 @@ func newDatabaseContainer(p DatabaseParams) (DatabaseContainer, error) {
 	dbConfig := database.DefaultConfig()
 
 	// Apply configuration values
-	if idleTime := p.DefaultDatabase.GetIdleConnsTime(); idleTime > 0 {
+	if idleTime := p.DefaultDatabaseConfig.GetIdleConnsTime(); idleTime > 0 {
 		dbConfig.ConnMaxIdleTime = idleTime
 	}
 
-	if maxIdle := p.DefaultDatabase.GetIdleMaxConns(); maxIdle > 0 {
+	if maxIdle := p.DefaultDatabaseConfig.GetIdleMaxConns(); maxIdle > 0 {
 		dbConfig.MaxIdleConns = maxIdle
 	}
 
-	if maxOpen := p.DefaultDatabase.GetMaxOpenConns(); maxOpen > 0 {
+	if maxOpen := p.DefaultDatabaseConfig.GetMaxOpenConns(); maxOpen > 0 {
 		dbConfig.MaxOpenConns = maxOpen
 	}
 
-	dbConfig.DSN = p.DefaultDatabase.GetDSN()
-	dbConfig.Dialector = p.DefaultDatabase.GetDialector()
+	dbConfig.DSN = p.DefaultDatabaseConfig.GetDSN()
+	dbConfig.Dialector = p.DefaultDatabaseConfig.GetDialector()
+	dbConfig.LogLevel = p.DefaultDatabaseConfig.GetLogLevel()
+	dbConfig.Logger = p.Log
+
+	// dbConfig.LogLevel =
 
 	// Create database connection
 	db, err := database.NewWithConfig(dbConfig)
@@ -93,7 +100,15 @@ func NewDatabases(p DatabaseParams, lc fx.Lifecycle) (DatabaseContainer, error) 
 	// Register lifecycle hooks
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			return infraDB.MigrateDefault(container.DefaultDatabase)
+			if err := infraDB.MigrateDefault(container.DefaultDatabase); err != nil {
+				return fmt.Errorf("default database migration failed: %w", err)
+			}
+
+			if err := infraDB.SeedDefault(container.DefaultDatabase); err != nil {
+				return fmt.Errorf("default database seeding failed: %w", err)
+			}
+
+			return nil
 		},
 		OnStop: func(ctx context.Context) error {
 			if sqlDB, err := container.DefaultDatabase.DB(); err == nil {

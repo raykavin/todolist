@@ -2,7 +2,12 @@ application:
   name: Todo List                                      # Application name
   description: A simple Todo List application example  # Application descriptions
   version: 1.0.0                                       # Application version
-  logger_level: debug                                  # Default application logger level
+  log_level: debug                                     # Default application logger level (e.g., "debug", "info", "warn", "error")
+
+  jwt:
+    secret_key: 4BNVF5H@#RoUMnd604£2BwJJ*             # JWT Secret key
+    expiration_time: 4h                               # Token expiration time
+    refresh_expiration_time: 24h                      # Refresh token expiration time
 
   web:
     listen: 3000                                      # Server port
@@ -24,6 +29,7 @@ application:
 databases:
   default:                       # Database name (if is default of the application use instead "default" key)
     dialector: postgres          # Database dialector
+    log_level: error             # Database log level (e.g., "silent", "info", "warn", "error")
     dsn: |                       # Database data source name
       host=todolist_dev_postgres
       port=5432

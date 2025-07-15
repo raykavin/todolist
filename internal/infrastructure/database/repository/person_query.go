@@ -26,7 +26,7 @@ func NewPersonQueryRepository(db *gorm.DB) repository.PersonQueryRepository {
 	}
 }
 
-// FindAll finds all persons with pagination
+// FindAll finds all people with pagination
 func (r *personQueryRepository) FindAll(ctx context.Context, options shared.QueryOptions) ([]*entity.Person, error) {
 	people := []*model.Person{}
 
@@ -40,7 +40,7 @@ func (r *personQueryRepository) FindAll(ctx context.Context, options shared.Quer
 	return r.mapper.ToDomainList(people)
 }
 
-// Search searches persons by name or email
+// Search searches people by name or email
 func (r *personQueryRepository) Search(ctx context.Context, searchQuery string, options shared.QueryOptions) ([]*entity.Person, error) {
 	people := []*model.Person{}
 
@@ -55,7 +55,7 @@ func (r *personQueryRepository) Search(ctx context.Context, searchQuery string, 
 	return r.mapper.ToDomainList(people)
 }
 
-// Count counts persons with filters
+// Count counts people with filters
 func (r *personQueryRepository) Count(ctx context.Context, filters []shared.Filter) (int64, error) {
 	var count int64
 

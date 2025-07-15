@@ -76,15 +76,15 @@ func (m *PersonMapper) ToDomain(model *model.Person) (*entity.Person, error) {
 
 // ToDomainList converts a list of models to domain entities
 func (m *PersonMapper) ToDomainList(models []*model.Person) ([]*entity.Person, error) {
-	persons := make([]*entity.Person, 0, len(models))
+	people := make([]*entity.Person, 0, len(models))
 
 	for _, model := range models {
 		person, err := m.ToDomain(model)
 		if err != nil {
 			return nil, err
 		}
-		persons = append(persons, person)
+		people = append(people, person)
 	}
 
-	return persons, nil
+	return people, nil
 }

@@ -11,6 +11,7 @@ help:
 	@echo "  mocks           Run generate-mocks.sh script (pass args as MOCK_ARGS)"
 	@echo "  test            Run test.sh script"
 	@echo "  setup           Run setup.sh script"
+	@echo "  swagger         Run swagger-doc.sh script"
 
 .PHONY: build
 build:
@@ -31,3 +32,7 @@ test:
 .PHONY: setup
 setup:
 	@scripts/setup.sh
+
+.PHONY: swagger
+swagger:
+	@scripts/swagger-doc.sh

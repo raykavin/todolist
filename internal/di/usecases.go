@@ -8,6 +8,7 @@ import (
 	rptTodo "todolist/internal/domain/todo/repository"
 	svcTodo "todolist/internal/domain/todo/service"
 	rptUser "todolist/internal/domain/user/repository"
+	"todolist/internal/service"
 	ucPerson "todolist/internal/usecase/person"
 	ucTodo "todolist/internal/usecase/todo"
 	ucUser "todolist/internal/usecase/user"
@@ -22,6 +23,7 @@ type UseCaseParams struct {
 	TodoRepository      rptTodo.TodoRepository
 	TodoQueryRepository rptTodo.TodoQueryRepository
 	TodoService         svcTodo.TodoService
+	TokenService        service.TokenService
 }
 
 // UseCaseContainer provides all use case implementations
@@ -49,7 +51,7 @@ type UseCaseContainer struct {
 }
 
 // NewUseCases creates all use case implementations
-func NewUseCases(p UseCaseParams) UseCaseContainer {
+func NewUseCases(p UseCaseParams) (UseCaseContainer, error) {
 	return UseCaseContainer{
 		// Person Use Cases
 		CreatePersonUseCase: ucPerson.NewCreatePersonUseCase(p.PersonRepository),
@@ -58,7 +60,7 @@ func NewUseCases(p UseCaseParams) UseCaseContainer {
 		// User Use Cases
 		ChangePasswordUseCase: ucUser.NewChangePasswordUseCase(p.UserRepository),
 		CreateUserUseCase:     ucUser.NewCreateUserUseCase(p.UserRepository, p.PersonRepository),
-		LoginUseCase:          ucUser.NewLoginUseCase(p.UserRepository, p.PersonRepository, p.AppConfig.GetName()),
+		LoginUseCase:          ucUser.NewLoginUseCase(p.UserRepository, p.PersonRepository, p.TokenService, p.AppConfig.GetName()),
 
 		// Todo Use Cases
 		CompleteTodoUseCase:  ucTodo.NewCompleteTodoUseCase(p.TodoRepository, p.TodoService),
@@ -68,7 +70,7 @@ func NewUseCases(p UseCaseParams) UseCaseContainer {
 		GetTodoUseCase:       ucTodo.NewGetTodoUseCase(p.TodoRepository, p.TodoService),
 		ListTodoUseCase:      ucTodo.NewListTodosUseCase(p.TodoQueryRepository),
 		UpdateTodoUseCase:    ucTodo.NewUpdateTodoUseCase(p.TodoRepository, p.TodoService),
-	}
+	}, nil
 }
 
 // UseCasesModule returns the fx module with all use case dependencies

@@ -27,9 +27,7 @@ func MigrateDefault(db *gorm.DB) error {
 		model.Todo{},
 		model.TodoDailyStatistics{},
 		model.TodoTag{},
-		model.TodoView{},
 		model.User{},
-		model.UserStatisticsView{},
 	}
 
 	// Auto migrate all models
@@ -84,15 +82,8 @@ func createIndexes(db *gorm.DB) error {
 
 // createViews creates database views for optimized queries
 func createViews(db *gorm.DB) error {
-	// Drop view
-	for _, view := range []string{"todo_view", "user_statistics_view"} {
-		if err := db.Exec(fmt.Sprintf(`DROP VIEW IF EXISTS %s CASCADE`, view)).Error; err != nil {
-			return err
-		}
-	}
-
-	views := []string{
-		`CREATE VIEW todo_view AS
+	views := []string{`
+		CREATE OR REPLACE VIEW todo_view AS
 		SELECT
 			t.id,
 			t.user_id,
@@ -119,7 +110,7 @@ func createViews(db *gorm.DB) error {
 		WHERE t.deleted_at IS NULL
 		GROUP BY t.id, u.username, p.name`,
 
-		`CREATE VIEW user_statistics_view AS
+		`CREATE OR REPLACE VIEW user_statistics_view AS
 		SELECT
 			u.id as user_id,
 			u.username,

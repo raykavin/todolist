@@ -3,7 +3,7 @@ package handler
 import (
 	"errors"
 	netHttp "net/http"
-	"todolist/internal/adapter/http"
+	"todolist/internal/adapter/delivery/http"
 	"todolist/internal/domain/person/valueobject"
 	"todolist/internal/domain/shared"
 	"todolist/internal/dto"
@@ -32,29 +32,29 @@ func NewPersonHandler(
 
 // Register registers person routes
 // func (h *PersonHandler) Register(router *gin.RouterGroup) {
-// 	persons := router.Group("/persons")
+// 	people := router.Group("/people")
 // 	{
 // 		// Public routes
-// 		persons.POST("/", h.CreatePerson)
+// 		people.POST("/", h.CreatePerson)
 
 // 		// Protected routes
-// 		persons.Use(authMiddleware)
-// 		persons.GET("/:id", h.GetPerson)
-// 		persons.PUT("/:id", h.UpdatePerson)
+// 		people.Use(authMiddleware)
+// 		people.GET("/:id", h.GetPerson)
+// 		people.PUT("/:id", h.UpdatePerson)
 // 	}
 // }
 
 // CreatePerson godoc
 // @Summary Create a new person
 // @Description Create a new person record
-// @Tags persons
+// @Tags people
 // @Accept json
 // @Produce json
 // @Param person body dto.CreatePersonRequest true "Person data"
 // @Success 201 {object} dto.Response{data=dto.PersonResponse}
 // @Failure 400 {object} dto.Response
 // @Failure 409 {object} dto.Response
-// @Router /api/v1/persons [post]
+// @Router /api/v1/people [post]
 func (h *PersonHandler) CreatePerson(ctx http.RequestContext) {
 	var input dto.CreatePersonRequest
 
@@ -87,14 +87,14 @@ func (h *PersonHandler) CreatePerson(ctx http.RequestContext) {
 // GetPerson godoc
 // @Summary Get person by ID
 // @Description Get person details by ID
-// @Tags persons
+// @Tags people
 // @Accept json
 // @Produce json
 // @Param id path string true "Person ID"
 // @Success 200 {object} dto.Response{data=dto.PersonResponse}
 // @Failure 404 {object} dto.Response
 // @Security BearerAuth
-// @Router /api/v1/persons/{id} [get]
+// @Router /api/v1/people/{id} [get]
 func (h *PersonHandler) GetPerson(ctx http.RequestContext) {
 	personID, err := getIDParam(ctx)
 	if err != nil {
@@ -125,7 +125,7 @@ func (h *PersonHandler) GetPerson(ctx http.RequestContext) {
 // UpdatePerson godoc
 // @Summary Update person
 // @Description Update person details
-// @Tags persons
+// @Tags people
 // @Accept json
 // @Produce json
 // @Param id path string true "Person ID"
@@ -134,7 +134,7 @@ func (h *PersonHandler) GetPerson(ctx http.RequestContext) {
 // @Failure 400 {object} dto.Response
 // @Failure 404 {object} dto.Response
 // @Security BearerAuth
-// @Router /api/v1/persons/{id} [put]
+// @Router /api/v1/people/{id} [put]
 func (h *PersonHandler) UpdatePerson(ctx http.RequestContext) {
 	personID, err := getIDParam(ctx)
 	if err != nil {

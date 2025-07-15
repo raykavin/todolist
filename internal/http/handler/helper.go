@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
-	"todolist/internal/adapter/http"
+	"todolist/internal/adapter/delivery/http"
 
 	"github.com/go-playground/validator/v10"
 )

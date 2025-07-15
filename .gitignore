@@ -7,3 +7,4 @@
 .golangci.yml
 */migration
 */worker
+*__debug*

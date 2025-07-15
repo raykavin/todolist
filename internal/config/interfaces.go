@@ -17,9 +17,7 @@ import (
  * or mock configuration in tests.
  */
 
-var (
-	ErrDatabaseNotFound = errors.New("database not found")
-)
+var ErrDatabaseNotFound = errors.New("database not found")
 
 // ConfigProvider is the main interface for accessing application configuration.
 type ConfigProvider interface {
@@ -35,8 +33,9 @@ type ApplicationProvider interface {
 	GetName() string           // Name of the application
 	GetDescription() string    // Description of the application
 	GetVersion() string        // Version of the application
-	GetLoggerLevel() string    // Logging level (e.g., "debug", "info", "warn", "error")
+	GetLogLevel() string       // Log level (e.g., "debug", "info", "warn", "error")
 	GetWeb() WebConfigProvider // Web server settings
+	GetJWT() JWTConfigProvider // JWT settings
 	// GetOIDC() OIDCConfigProvider // OIDC settings
 }
 
@@ -54,10 +53,18 @@ type WebConfigProvider interface {
 	GetCORS() map[string]string     // CORS headers configuration
 }
 
+// JWTConfigProvider defines the configuration for the jwt
+type JWTConfigProvider interface {
+	GetSecretKey() string
+	GetExpirationTime() time.Duration
+	GetRefreshExpirationTime() time.Duration
+}
+
 // DatabaseServiceProvider defines the interface for a database service
 type DatabaseServiceProvider interface {
 	GetDialector() string            // Returns the database dialector (e.g., "mysql", "mariadb", "postgres", "sqlite")
 	GetDSN() string                  // Returns the Data Source Name (DSN) for the database connection
+	GetLogLevel() string             // Returns the database log level (e.g., "silent", "info", "warn", "error")
 	GetIdleConnsTime() time.Duration // Returns the idle connections time duration
 	GetIdleMaxConns() int            // Returns the maximum number of idle connections
 	GetMaxOpenConns() int            // Returns the maximum number of open connections

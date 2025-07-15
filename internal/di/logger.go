@@ -5,9 +5,8 @@ import (
 	"slices"
 	"strings"
 	"todolist/internal/config"
+	infraLog "todolist/internal/infrastructure/logger"
 	"todolist/pkg/log"
-
-	adptLog "todolist/internal/adapter/log"
 
 	"go.uber.org/fx"
 )
@@ -53,7 +52,7 @@ func validateLoggerLevel(level string) error {
 // NewLogger creates a new logger instance with validation
 func NewLogger(params LoggerParams) (log.ExtendedLog, error) {
 	// Validate logger level
-	logLevel := params.Config.GetLoggerLevel()
+	logLevel := params.Config.GetLogLevel()
 	if err := validateLoggerLevel(logLevel); err != nil {
 		return nil, fmt.Errorf("invalid logger configuration: %w", err)
 	}
@@ -74,7 +73,7 @@ func NewLogger(params LoggerParams) (log.ExtendedLog, error) {
 	}
 
 	// Wrap with adapter
-	return &adptLog.SmartLogAdapter{Logger: logger}, nil
+	return &infraLog.SmartLogAdapter{Logger: logger}, nil
 }
 
 // LoggerModule returns the fx module with logger dependencies

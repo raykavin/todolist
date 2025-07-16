@@ -86,48 +86,6 @@ func BuildSearchQuery(query *gorm.DB, searchTerm string, fields ...string) *gorm
 	return query.Where(whereClause, values...)
 }
 
-// Paginate creates a paginated response
-type PaginatedResult struct {
-	Data       any   `json:"data"`
-	Total      int64 `json:"total"`
-	Page       int   `json:"page"`
-	PageSize   int   `json:"page_size"`
-	TotalPages int   `json:"total_pages"`
-}
-
-// Paginate applies pagination and returns paginated result
-func Paginate(db *gorm.DB, page, pageSize int, result any) (*PaginatedResult, error) {
-	var total int64
-
-	// Count total records
-	countQuery := db.Session(&gorm.Session{})
-	if err := countQuery.Count(&total).Error; err != nil {
-		return nil, err
-	}
-
-	// Calculate offset
-	offset := (page - 1) * pageSize
-
-	// Get paginated data
-	if err := db.Limit(pageSize).Offset(offset).Find(result).Error; err != nil {
-		return nil, err
-	}
-
-	// Calculate total pages
-	totalPages := int(total) / pageSize
-	if int(total)%pageSize > 0 {
-		totalPages++
-	}
-
-	return &PaginatedResult{
-		Data:       result,
-		Total:      total,
-		Page:       page,
-		PageSize:   pageSize,
-		TotalPages: totalPages,
-	}, nil
-}
-
 // BatchInsert performs batch insert with chunk size
 func BatchInsert(db *gorm.DB, records any, chunkSize int) error {
 	return db.CreateInBatches(records, chunkSize).Error

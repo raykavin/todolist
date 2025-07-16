@@ -2,7 +2,7 @@
 
 A scalable Todo List application built with Go, following Domain-Driven Design (DDD) principles and clean architecture patterns.
 
-## 🚀 Features
+## Features
 
 - **User Management**: Complete authentication and authorization system with JWT tokens
 - **Todo Management**: Create, read, update, delete, and complete todos
@@ -15,7 +15,7 @@ A scalable Todo List application built with Go, following Domain-Driven Design (
 - **API Documentation**: Swagger/OpenAPI documentation
 - **Comprehensive Testing**: Unit tests
 
-## 🏗️ Architecture
+## Architecture
 
 This application follows clean architecture principles with the following layers:
 
@@ -303,7 +303,7 @@ This application follows clean architecture principles with the following layers
         └── user_test.go                      # User integration tests
 ```
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Go 1.21 or higher
 - Docker and Docker Compose
@@ -311,7 +311,7 @@ This application follows clean architecture principles with the following layers
 - Redis (optional, for caching)
 - Make
 
-## 🛠️ Installation
+## Installation
 
 1. **Clone the repository**
    ```bash
@@ -335,7 +335,7 @@ This application follows clean architecture principles with the following layers
    make swagger
    ```
 
-## 🚀 Running the Application
+## Running the Application
 
 ### Using Docker Compose
 
@@ -370,7 +370,7 @@ make mocks
 make deploy
 ```
 
-## 🔧 Configuration
+## Configuration
 
 The application uses YAML configuration files located in the `config/` directory:
 
@@ -408,7 +408,7 @@ API documentation is available via Swagger UI:
 - `POST /api/v1/people` - Create new person
 - `PUT /api/v1/people/:id` - Update person
 
-## 🧪 Testing
+## Testing
 
 The application includes comprehensive test coverage:
 
@@ -429,7 +429,7 @@ go test ./test/e2e/...
 go test -cover ./...
 ```
 
-## 🚢 Deployment
+## Deployment
 
 ### Docker
 
@@ -441,7 +441,7 @@ docker build -f deploy/docker/Dockerfile -t todo-app:latest .
 docker run -p 8080:8080 todo-app:latest
 ```
 
-## 🔒 Security Features
+## Security Features
 
 - JWT-based authentication
 - Password hashing with bcrypt
@@ -449,7 +449,7 @@ docker run -p 8080:8080 todo-app:latest
 - SQL injection protection via ORM
 - Input validation
 
-## 📊 Monitoring
+## Monitoring
 
 The application includes:
 - Health check endpoint: `GET /health`

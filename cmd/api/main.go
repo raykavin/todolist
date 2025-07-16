@@ -51,8 +51,8 @@ func main() {
 		di.DatabasesModule(),                     // Databases: database infrastructures
 		di.RepositoriesModule(),                  // Repositories: database repositories
 		di.ApplicationServicesModule(),           // Services: application services
-		di.DomainServicesModule(),                // Services: domain services
-		di.UseCasesModule(),                      // UseCases: business logic
+		di.DomainServicesModule(),                // Services: complex domain services business logic
+		di.UseCasesModule(),                      // UseCases: specifics business logic
 		di.HTTPHandlersModule(),                  // HTTPHandler: HTTP handlers
 		di.HTTPServerModule(),                    // HTTPServer: HTTP server setup
 

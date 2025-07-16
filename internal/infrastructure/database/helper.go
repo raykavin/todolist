@@ -86,19 +86,6 @@ func BuildSearchQuery(query *gorm.DB, searchTerm string, fields ...string) *gorm
 	return query.Where(whereClause, values...)
 }
 
-// Preload applies preloading with conditions
-func Preload(query *gorm.DB, associations ...string) *gorm.DB {
-	for _, association := range associations {
-		query = query.Preload(association)
-	}
-	return query
-}
-
-// SoftDelete applies soft delete filter
-func SoftDelete(query *gorm.DB) *gorm.DB {
-	return query.Where("deleted_at IS NULL")
-}
-
 // Paginate creates a paginated response
 type PaginatedResult struct {
 	Data       any   `json:"data"`

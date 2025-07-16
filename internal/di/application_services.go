@@ -5,9 +5,9 @@ import (
 
 	"go.uber.org/fx"
 
+	"todolist/internal/adapter/auth"
 	"todolist/internal/config"
 	rptTodo "todolist/internal/domain/user/repository"
-	"todolist/internal/infrastructure/auth"
 	"todolist/internal/service"
 )
 

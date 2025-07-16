@@ -1,10 +1,10 @@
 package di
 
 import (
+	"todolist/internal/adapter/repository"
 	rptPerson "todolist/internal/domain/person/repository"
 	rptTodo "todolist/internal/domain/todo/repository"
 	rptUser "todolist/internal/domain/user/repository"
-	rptInfra "todolist/internal/infrastructure/database/repository"
 
 	"go.uber.org/fx"
 	"gorm.io/gorm"
@@ -30,12 +30,12 @@ type RepositoryContainer struct {
 // NewRepositories creates all repository implementations
 func NewRepositories(p RepositoryParams) RepositoryContainer {
 	return RepositoryContainer{
-		UserRepository:        rptInfra.NewUserRepository(p.DatabaseProvider),
-		UserQueryRepository:   rptInfra.NewUserQueryRepository(p.DatabaseProvider),
-		PersonRepository:      rptInfra.NewPersonRepository(p.DatabaseProvider),
-		PersonQueryRepository: rptInfra.NewPersonQueryRepository(p.DatabaseProvider),
-		TodoRepository:        rptInfra.NewTodoRepository(p.DatabaseProvider),
-		TodoQueryRepository:   rptInfra.NewTodoQueryRepository(p.DatabaseProvider),
+		UserRepository:        repository.NewUserRepository(p.DatabaseProvider),
+		UserQueryRepository:   repository.NewUserQueryRepository(p.DatabaseProvider),
+		PersonRepository:      repository.NewPersonRepository(p.DatabaseProvider),
+		PersonQueryRepository: repository.NewPersonQueryRepository(p.DatabaseProvider),
+		TodoRepository:        repository.NewTodoRepository(p.DatabaseProvider),
+		TodoQueryRepository:   repository.NewTodoQueryRepository(p.DatabaseProvider),
 	}
 }
 

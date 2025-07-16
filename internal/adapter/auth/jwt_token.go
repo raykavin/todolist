@@ -1,7 +1,7 @@
 package auth
 
 /*
- * jwt_token_adapter.go
+ * jwt_token.go
  *
  * This adapter connects the JWT service implementation to the domain TokenService interface.
  * It translates between the domain types and the JWT service types, keeping the JWT

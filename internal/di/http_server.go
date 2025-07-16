@@ -3,6 +3,7 @@ package di
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"sync"
 	"time"
 
@@ -15,6 +16,8 @@ import (
 	"todolist/pkg/web"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/fx"
 
 	_ "todolist/docs"
@@ -117,8 +120,10 @@ func setupAppMiddleware(router *gin.Engine, params HTTPServerParams) {
 func setupAppRoutes(router *gin.Engine, params HTTPServerParams) {
 	// Basic routes
 	router.GET("/", func(c *gin.Context) {
-		c.Redirect(302, "/swagger/index.html")
+		c.Redirect(http.StatusTemporaryRedirect, "/swagger/index.html")
 	})
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	router.GET("/health", adptHttp.WrapHandler(params.HealthHandler.HealthCheck))
 

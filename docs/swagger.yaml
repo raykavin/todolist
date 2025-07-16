@@ -285,7 +285,7 @@ host: localhost:3000
 info:
   contact:
     email: soge@fibralink.net.br
-    name: API Support
+    name: SOGE Fibralink
     url: https://fibralink.net.br
   description: A simple Todo List application example
   title: Todo List API

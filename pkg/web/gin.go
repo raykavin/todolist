@@ -261,7 +261,7 @@ func createPayloadLimitMiddleware(maxSize int64) gin.HandlerFunc {
 func (e *Engine) setupNoRouteHandler() {
 	e.router.NoRoute(func(c *gin.Context) {
 		if e.config.NoRouteTo != "" && !e.config.NoRouteJSON {
-			c.Redirect(http.StatusFound, e.config.NoRouteTo)
+			c.Redirect(http.StatusTemporaryRedirect, e.config.NoRouteTo)
 			return
 		}
 

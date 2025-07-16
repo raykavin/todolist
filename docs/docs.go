@@ -10,7 +10,7 @@ const docTemplate = `{
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
         "contact": {
-            "name": "API Support",
+            "name": "SOGE Fibralink",
             "url": "https://fibralink.net.br",
             "email": "soge@fibralink.net.br"
         },

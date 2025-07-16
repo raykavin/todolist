@@ -17,22 +17,6 @@ type LoggerParams struct {
 	Config config.ApplicationProvider
 }
 
-// LoggerConfig holds logger configuration constants
-type LoggerConfig struct {
-	TimeFormat    string
-	ColorEnabled  bool
-	CallerEnabled bool
-}
-
-// DefaultLoggerConfig returns default logger configuration
-func DefaultLoggerConfig() LoggerConfig {
-	return LoggerConfig{
-		TimeFormat:    "2006-01-02 15:04:05",
-		ColorEnabled:  true,
-		CallerEnabled: false,
-	}
-}
-
 // validateLoggerLevel validates the logger level
 func validateLoggerLevel(level string) error {
 	if level == "" {
@@ -57,17 +41,14 @@ func NewLogger(params LoggerParams) (log.ExtendedLog, error) {
 		return nil, fmt.Errorf("invalid logger configuration: %w", err)
 	}
 
-	// Get default configuration
-	config := DefaultLoggerConfig()
-
 	// Create smart logger with validated configuration
-	logger, err := log.NewSmartLog(
-		logLevel,
-		config.TimeFormat,
-		config.ColorEnabled,
-		config.CallerEnabled,
-		false,
-	)
+	logger, err := log.New(&log.Config{
+		Level:          logLevel,
+		DateTimeLayout: "2006-01-02 15:04:05",
+		Colored:        true,
+		JSONFormat:     false,
+		UseEmoji:       false,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize smart logger: %w", err)
 	}

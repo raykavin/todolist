@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+	adptLogger "todolist/internal/adapter/logger"
 	"todolist/internal/config"
-	infraLog "todolist/internal/infrastructure/logger"
-	"todolist/pkg/log"
+	"todolist/pkg/logger"
 
 	"go.uber.org/fx"
 )
@@ -34,7 +34,7 @@ func validateLoggerLevel(level string) error {
 }
 
 // NewLogger creates a new logger instance with validation
-func NewLogger(params LoggerParams) (log.ExtendedLog, error) {
+func NewLogger(params LoggerParams) (logger.ExtendedLog, error) {
 	// Validate logger level
 	logLevel := params.Config.GetLogLevel()
 	if err := validateLoggerLevel(logLevel); err != nil {
@@ -42,7 +42,7 @@ func NewLogger(params LoggerParams) (log.ExtendedLog, error) {
 	}
 
 	// Create smart logger with validated configuration
-	logger, err := log.New(&log.Config{
+	logger, err := logger.New(&logger.Config{
 		Level:          logLevel,
 		DateTimeLayout: "2006-01-02 15:04:05",
 		Colored:        true,
@@ -54,7 +54,7 @@ func NewLogger(params LoggerParams) (log.ExtendedLog, error) {
 	}
 
 	// Wrap with adapter
-	return &infraLog.SmartLogAdapter{Logger: logger}, nil
+	return &adptLogger.SmartLogAdapter{Logger: logger}, nil
 }
 
 // LoggerModule returns the fx module with logger dependencies

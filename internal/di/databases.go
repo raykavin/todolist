@@ -6,7 +6,7 @@ import (
 	"todolist/internal/config"
 	infraDB "todolist/internal/infrastructure/database"
 	"todolist/pkg/database"
-	"todolist/pkg/log"
+	"todolist/pkg/logger"
 
 	"go.uber.org/fx"
 	"gorm.io/gorm"
@@ -15,9 +15,10 @@ import (
 // DatabaseParams defines the dependencies required to create the database engine
 type DatabaseParams struct {
 	fx.In
+	Shutdowner            fx.Shutdowner
 	DefaultDatabaseConfig config.DatabaseServiceProvider
 	ApplicationConfig     config.ApplicationProvider
-	Log                   log.ExtendedLog
+	Log                   logger.Interface
 }
 
 // DatabaseContainer groups all database implementations provided from Fx

@@ -1,19 +1,19 @@
-package log
+package logger
 
 import (
 	"fmt"
 	"time"
-	"todolist/pkg/log"
+	"todolist/pkg/logger"
 )
 
 type SmartLogAdapter struct {
-	*log.Logger
+	*logger.Logger
 }
 
 // Ensure it implements both interfaces
 var (
-	_ log.Interface   = (*SmartLogAdapter)(nil)
-	_ log.ExtendedLog = (*SmartLogAdapter)(nil)
+	_ logger.Interface   = (*SmartLogAdapter)(nil)
+	_ logger.ExtendedLog = (*SmartLogAdapter)(nil)
 )
 
 // Print implements Logging.
@@ -87,21 +87,21 @@ func (s *SmartLogAdapter) Panicf(format string, args ...any) {
 }
 
 // WithError implements Logging.
-func (s *SmartLogAdapter) WithError(err error) log.Interface {
+func (s *SmartLogAdapter) WithError(err error) logger.Interface {
 	newLogger := s.With().Err(err).Logger()
-	return &SmartLogAdapter{&log.Logger{Logger: &newLogger}}
+	return &SmartLogAdapter{&logger.Logger{Logger: &newLogger}}
 }
 
 // WithField implements Logging.
-func (s *SmartLogAdapter) WithField(key string, value any) log.Interface {
+func (s *SmartLogAdapter) WithField(key string, value any) logger.Interface {
 	newLogger := s.With().Interface(key, value).Logger()
-	return &SmartLogAdapter{&log.Logger{Logger: &newLogger}}
+	return &SmartLogAdapter{&logger.Logger{Logger: &newLogger}}
 }
 
 // WithFields implements Logging.
-func (s *SmartLogAdapter) WithFields(fields map[string]any) log.Interface {
+func (s *SmartLogAdapter) WithFields(fields map[string]any) logger.Interface {
 	newLogger := s.With().Fields(fields).Logger()
-	return &SmartLogAdapter{&log.Logger{Logger: &newLogger}}
+	return &SmartLogAdapter{&logger.Logger{Logger: &newLogger}}
 }
 
 // Success implements SmartLogging.
@@ -130,7 +130,7 @@ func (s *SmartLogAdapter) API(method, path string, statusCode int, duration time
 }
 
 // WithContext implements SmartLogging.
-func (s *SmartLogAdapter) WithContext(ctx map[string]any) log.ExtendedLog {
+func (s *SmartLogAdapter) WithContext(ctx map[string]any) logger.ExtendedLog {
 	smartLogger := s.Logger.WithContext(ctx)
 	return &SmartLogAdapter{smartLogger}
 }

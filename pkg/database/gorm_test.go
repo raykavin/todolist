@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 	"time"
-	"todolist/pkg/log"
+	pkgLogger "todolist/pkg/logger"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -20,28 +20,28 @@ type mockLogger struct {
 	mock.Mock
 }
 
-func (m *mockLogger) WithField(key string, value any) log.Interface {
+func (m *mockLogger) WithField(key string, value any) pkgLogger.Interface {
 	args := m.Called(key, value)
 	if args.Get(0) == nil {
 		return nil
 	}
-	return args.Get(0).(log.Interface)
+	return args.Get(0).(pkgLogger.Interface)
 }
 
-func (m *mockLogger) WithFields(fields map[string]any) log.Interface {
+func (m *mockLogger) WithFields(fields map[string]any) pkgLogger.Interface {
 	args := m.Called(fields)
 	if args.Get(0) == nil {
 		return nil
 	}
-	return args.Get(0).(log.Interface)
+	return args.Get(0).(pkgLogger.Interface)
 }
 
-func (m *mockLogger) WithError(err error) log.Interface {
+func (m *mockLogger) WithError(err error) pkgLogger.Interface {
 	args := m.Called(err)
 	if args.Get(0) == nil {
 		return nil
 	}
-	return args.Get(0).(log.Interface)
+	return args.Get(0).(pkgLogger.Interface)
 }
 
 func (m *mockLogger) Print(args ...any) {
@@ -105,17 +105,17 @@ type mockLoggerWithChain struct {
 	mock.Mock
 }
 
-func (m *mockLoggerWithChain) WithField(key string, value any) log.Interface {
+func (m *mockLoggerWithChain) WithField(key string, value any) pkgLogger.Interface {
 	m.Called(key, value)
 	return m
 }
 
-func (m *mockLoggerWithChain) WithFields(fields map[string]any) log.Interface {
+func (m *mockLoggerWithChain) WithFields(fields map[string]any) pkgLogger.Interface {
 	m.Called(fields)
 	return m
 }
 
-func (m *mockLoggerWithChain) WithError(err error) log.Interface {
+func (m *mockLoggerWithChain) WithError(err error) pkgLogger.Interface {
 	m.Called(err)
 	return m
 }
@@ -422,7 +422,7 @@ func TestBuildGormConfig(t *testing.T) {
 		assert.NotNil(t, gormCfg)
 		assert.NotNil(t, gormCfg.Logger)
 		// Verify it's our custom logger adapter
-		_, ok := gormCfg.Logger.(*customLoggerAdapter)
+		_, ok := gormCfg.Logger.(*dbLogger)
 		assert.True(t, ok)
 	})
 }
@@ -567,9 +567,9 @@ func TestWithLogConfig(t *testing.T) {
 	assert.NotEqual(t, db, newDB) // Should be a new session
 }
 
-func TestCustomLoggerAdapter(t *testing.T) {
+func Test_DBLogger(t *testing.T) {
 	mockLog := &mockLoggerWithChain{}
-	adapter := &customLoggerAdapter{
+	adapter := &dbLogger{
 		log:           mockLog,
 		LogLevel:      logger.Info,
 		SlowThreshold: 200 * time.Millisecond,
@@ -578,7 +578,7 @@ func TestCustomLoggerAdapter(t *testing.T) {
 	t.Run("LogMode", func(t *testing.T) {
 		newLogger := adapter.LogMode(logger.Error)
 		assert.NotNil(t, newLogger)
-		assert.Equal(t, logger.Error, newLogger.(*customLoggerAdapter).LogLevel)
+		assert.Equal(t, logger.Error, newLogger.(*dbLogger).LogLevel)
 	})
 
 	t.Run("Info", func(t *testing.T) {
@@ -590,7 +590,7 @@ func TestCustomLoggerAdapter(t *testing.T) {
 	})
 
 	t.Run("Info with Silent level", func(t *testing.T) {
-		silentAdapter := &customLoggerAdapter{
+		silentAdapter := &dbLogger{
 			log:      mockLog,
 			LogLevel: logger.Silent,
 		}
@@ -642,7 +642,7 @@ func TestCustomLoggerAdapter(t *testing.T) {
 	})
 
 	t.Run("Trace with normal query", func(t *testing.T) {
-		infoAdapter := &customLoggerAdapter{
+		infoAdapter := &dbLogger{
 			log:           mockLog,
 			LogLevel:      logger.Info,
 			SlowThreshold: 1 * time.Second,
@@ -659,7 +659,7 @@ func TestCustomLoggerAdapter(t *testing.T) {
 	})
 
 	t.Run("Trace with Silent level", func(t *testing.T) {
-		silentAdapter := &customLoggerAdapter{
+		silentAdapter := &dbLogger{
 			log:      mockLog,
 			LogLevel: logger.Silent,
 		}

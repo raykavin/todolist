@@ -8,7 +8,7 @@ import (
 	stdlog "log"
 	"os"
 	"time"
-	"todolist/pkg/log"
+	log "todolist/pkg/logger"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -180,7 +180,7 @@ func buildGormConfig(cfg *Config) *gorm.Config {
 
 	// Use custom logger if provided
 	if cfg.Logger != nil {
-		gormLogger = &customLoggerAdapter{
+		gormLogger = &dbLogger{
 			log:           cfg.Logger,
 			LogLevel:      ParseLoggerLevel(cfg.LogLevel),
 			SlowThreshold: cfg.SlowThreshold,

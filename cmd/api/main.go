@@ -11,7 +11,7 @@ import (
 	"time"
 	"todolist/internal/config"
 	"todolist/internal/di"
-	"todolist/pkg/log"
+	"todolist/pkg/logger"
 	"todolist/pkg/terminal"
 
 	"go.uber.org/fx"
@@ -47,7 +47,7 @@ func main() {
 
 		// Dependency injection modules
 		di.CoreModule(*configFile, *watchConfig), // Core: context, config, wait group
-		di.LoggerModule(),                        // Logger: log infrastructure
+		di.LoggerModule(),                        // Logger: logger infrastructure
 		di.DatabasesModule(),                     // Databases: database infrastructures
 		di.RepositoriesModule(),                  // Repositories: database repositories
 		di.ApplicationServicesModule(),           // Services: application services
@@ -91,16 +91,16 @@ func runApplication(
 	lc fx.Lifecycle,
 	ctx context.Context,
 	cancel context.CancelFunc,
-	log log.ExtendedLog,
+	logger logger.ExtendedLog,
 	wg *sync.WaitGroup,
 ) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			log.Success("Application started")
+			logger.Success("Application started")
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			return gracefulShutdown(cancel, log, wg)
+			return gracefulShutdown(cancel, logger, wg)
 		},
 	})
 }
@@ -108,10 +108,10 @@ func runApplication(
 // gracefulShutdown cancels the main context and waits for goroutines to finish
 func gracefulShutdown(
 	cancel context.CancelFunc,
-	log log.ExtendedLog,
+	logger logger.ExtendedLog,
 	wg *sync.WaitGroup,
 ) error {
-	log.Info("Shutting down application...")
+	logger.Info("Shutting down application...")
 
 	// Cancel the main context
 	cancel()
@@ -125,9 +125,9 @@ func gracefulShutdown(
 
 	select {
 	case <-done:
-		log.Success("All goroutines finished successfully")
+		logger.Success("All goroutines finished successfully")
 	case <-time.After(shutdownTimeout):
-		log.Failure("Timeout waiting for goroutines to finish")
+		logger.Failure("Timeout waiting for goroutines to finish")
 	}
 
 	return nil
@@ -137,32 +137,32 @@ func gracefulShutdown(
 func handleAppLifecycle(
 	lc fx.Lifecycle,
 	shutdowner fx.Shutdowner,
-	log log.ExtendedLog,
+	logger logger.ExtendedLog,
 ) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			go signalHandler(shutdowner, log)
+			go signalHandler(shutdowner, logger)
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			log.Success("Application stopped successfully")
+			logger.Success("Application stopped successfully")
 			return nil
 		},
 	})
 }
 
 // signalHandler listens for OS signals to trigger application shutdown
-func signalHandler(shutdowner fx.Shutdowner, log log.ExtendedLog) {
+func signalHandler(shutdowner fx.Shutdowner, logger logger.ExtendedLog) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
-	log.Info("Application is running. Press Ctrl+C to stop...")
+	logger.Info("Application is running. Press Ctrl+C to stop...")
 	<-quit
 
-	log.Info("Shutdown signal received")
-	log.Warn("Closing connections and cleaning up, please wait...")
+	logger.Info("Shutdown signal received")
+	logger.Warn("Closing connections and cleaning up, please wait...")
 
 	if err := shutdowner.Shutdown(); err != nil {
-		log.Failure(fmt.Sprintf("Error during shutdown: %v", err))
+		logger.Failure(fmt.Sprintf("Error during shutdown: %v", err))
 	}
 }

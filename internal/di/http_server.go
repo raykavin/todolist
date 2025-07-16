@@ -12,7 +12,7 @@ import (
 	"todolist/internal/adapter/delivery/http/middleware"
 	"todolist/internal/config"
 	"todolist/internal/service"
-	"todolist/pkg/log"
+	"todolist/pkg/logger"
 	"todolist/pkg/web"
 
 	"github.com/gin-gonic/gin"
@@ -33,7 +33,7 @@ type HTTPServerParams struct {
 	TodoHandler   *handler.TodoHandler
 	HealthHandler *handler.HealthHandler
 	TokenService  service.TokenService
-	Log           log.ExtendedLog
+	Log           logger.ExtendedLog
 	AppConfig     config.ApplicationProvider
 }
 
@@ -106,7 +106,7 @@ func setupAppMiddleware(router *gin.Engine, params HTTPServerParams) {
 	webConfig := params.AppConfig.GetWeb()
 
 	// Request logging
-	router.Use(middleware.RequestLog(params.Log))
+	router.Use(middleware.RequestLogger(params.Log))
 
 	// CORS
 	if corsHeaders := webConfig.GetCORS(); len(corsHeaders) > 0 {
@@ -207,7 +207,7 @@ func startServer(engine adptHttp.HttpServer, params HTTPServerParams) error {
 }
 
 // stopServer gracefully shuts down the HTTP server
-func stopServer(ctx context.Context, engine adptHttp.HttpServer, logger log.ExtendedLog) error {
+func stopServer(ctx context.Context, engine adptHttp.HttpServer, logger logger.ExtendedLog) error {
 	logger.Info("Stopping HTTP server...")
 
 	shutdownCtx, cancel := context.WithTimeout(ctx, 30*time.Second)

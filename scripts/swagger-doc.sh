@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-echo "Instalando swag CLI..."
+echo "Installing swag CLI..."
 go install github.com/swaggo/swag/cmd/swag@latest
 
-echo "Gerando documentação Swagger..."
+echo "Generating Swagger documentation..."
 swag init --parseDependency --parseInternal -g cmd/api/main.go
 
-echo "Documentação gerada na pasta ./docs"
+echo "Successfully, output path ./docs"

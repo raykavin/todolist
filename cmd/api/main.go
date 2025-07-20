@@ -75,8 +75,8 @@ func configureFxLogger() fxevent.Logger {
 
 // displayAppInfo prints the application banner and basic info
 func displayAppInfo(config config.ApplicationProvider) {
-	displayText := "S.O.G.E - Sistemas Operacionais, Gerenciais e Estratégicos"
-	displayText2 := fmt.Sprintf("Copyright (c) %d I R Tecnologia, Todos os direitos reservados!", time.Now().Year())
+	displayText := ""
+	displayText2 := fmt.Sprintf("Copyright (c) %d Raykavin Meireles, Todos os direitos reservados!", time.Now().Year())
 	displayText3 := fmt.Sprintf("Version: %s", config.GetVersion())
 
 	terminal.PrintBanner(config.GetName())

@@ -284,9 +284,9 @@ definitions:
 host: localhost:3000
 info:
   contact:
-    email: soge@fibralink.net.br
-    name: SOGE Fibralink
-    url: https://fibralink.net.br
+    email: raykavin.meireles@gmail.com
+    name: Raykavin Meireles
+    url: https://raykavin@github.io
   description: A simple Todo List application example
   title: Todo List API
   version: "1.0"

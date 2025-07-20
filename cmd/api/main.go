@@ -31,9 +31,9 @@ const shutdownTimeout = 5 * time.Second
 // @version         1.0
 // @description     A simple Todo List application example
 
-// @contact.name   SOGE Fibralink
-// @contact.url    https://fibralink.net.br
-// @contact.email  soge@fibralink.net.br
+// @contact.name   Raykavin Meireles
+// @contact.url    https://raykavin.github.io
+// @contact.email  raykavin.meireles@gmail.com
 
 // @host      localhost:3000
 // @BasePath  /api/v1
